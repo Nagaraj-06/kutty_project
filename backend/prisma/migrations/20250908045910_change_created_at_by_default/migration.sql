@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE `feedbacks` MODIFY `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE `reset_tokens` MODIFY `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE `skill_swaps` MODIFY `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE `user_availability` MODIFY `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE `user_skills` MODIFY `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE `users` MODIFY `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3);

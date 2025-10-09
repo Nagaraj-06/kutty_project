@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum SkillType {
+  OFFERING
+  WANTED
+}
+
+enum DayOfWeek {
+  MON
+  TUES
+  WED
+  THURS
+  FRI
+  SAT
+  SUN
+}
+
+enum UserSkillStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model roles_master {
+  id         String    @id @default(uuid())
+  name       String    @unique @db.VarChar(255)
+  is_active  Boolean?  @default(true)
+  created_at DateTime? @default(now())
+
+  users users[]
+}
+
+model users {
+  id                 String             @id @default(uuid())
+  email              String             @unique @db.VarChar(255)
+  user_name          String             @db.VarChar(30)
+  password_hash      String
+  bio                String?
+  profile_pic_url    String?
+  profile_visibility ProfileVisibility? @default(PUBLIC)
+  role_id            String
+  is_active          Boolean?           @default(true)
+  created_at         DateTime?          @default(now())
+  updated_at         DateTime?          @updatedAt
+  deleted_at         DateTime?
+  deleted_by         String?            @db.Char(36)
+
+  role               roles_master?              @relation(fields: [role_id], references: [id])
+  reset_tokens       reset_tokens[]
+  user_skills        user_skills[]
+  user_availability  user_availability[]
+  given_feedbacks    feedbacks[]                @relation("feedback_given")
+  received_feedbacks feedbacks[]                @relation("feedback_received")
+  requests_from      skill_swaps[]              @relation("requests_from")
+  requests_to        skill_swaps[]              @relation("requests_to")
+  user_assessments   user_assessment_attempts[]
+  chat_messages      chat_messages[]
+}
+
+model user_availability {
+  id          String     @id @default(uuid())
+  user_id     String
+  day_of_week DayOfWeek?
+  from_time   DateTime?
+  to_time     DateTime?
+  is_active   Boolean?   @default(true)
+  created_at  DateTime?  @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, day_of_week, from_time, to_time])
+}
+
+model reset_tokens {
+  id           String    @id @default(uuid())
+  user_id      String
+  token        String    @unique
+  token_expiry DateTime?
+  used         Boolean?
+  created_at   DateTime? @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model skills_master {
+  id         String    @id @default(uuid())
+  name       String    @unique @db.VarChar(100)
+  is_active  Boolean?  @default(true)
+  created_at DateTime? @default(now())
+
+  user_skills user_skills[]
+  assessments assessments_master[]
+}
+
+model user_skills {
+  id                String          @id @default(uuid())
+  user_id           String
+  skill_id          String
+  skill_type        SkillType
+  status            UserSkillStatus @default(INACTIVE)
+  average_rating    Float?
+  is_active         Boolean?        @default(true)
+  created_at        DateTime?       @default(now())
+  user              users           @relation(fields: [user_id], references: [id])
+  skill             skills_master   @relation(fields: [skill_id], references: [id])
+  offer_skill_swaps skill_swaps[]   @relation("offer_skill")
+  want_skill_swaps  skill_swaps[]   @relation("want_skill")
+
+  @@unique([user_id, skill_id])
+}
+
+model skill_swaps {
+  id             String        @id @default(uuid())
+  request_from   String
+  request_to     String
+  offer_skill_id String
+  want_skill_id  String
+  message        String?
+  scheduled      DateTime?
+  status         RequestStatus
+  is_active      Boolean?      @default(true)
+  created_at     DateTime?     @default(now())
+  created_by     String?
+  updated_at     DateTime?     @updatedAt
+  updated_by     String?
+  deleted_at     DateTime?
+  deleted_by     String?
+
+  requestFrom users       @relation("requests_from", fields: [request_from], references: [id])
+  requestTo   users       @relation("requests_to", fields: [request_to], references: [id])
+  offerSkill  user_skills @relation("offer_skill", fields: [offer_skill_id], references: [id])
+  wantSkill   user_skills @relation("want_skill", fields: [want_skill_id], references: [id])
+
+  feedbacks     feedbacks[]
+  chat_sessions chat_sessions[]
+}
+
+model feedbacks {
+  id            String    @id @default(uuid())
+  skill_swap_id String
+  given_by      String
+  received_by   String
+  feedback_text String?
+  rating        Float?
+  is_active     Boolean?  @default(true)
+  created_at    DateTime? @default(now())
+  created_by    String?
+  updated_at    DateTime? @updatedAt
+  updated_by    String?
+  deleted_at    DateTime?
+  deleted_by    String?
+
+  skill_swap skill_swaps @relation(fields: [skill_swap_id], references: [id])
+  givenBy    users       @relation("feedback_given", fields: [given_by], references: [id])
+  receivedBy users       @relation("feedback_received", fields: [received_by], references: [id])
+}
+
+model assessments_master {
+  id         String    @id @default(uuid())
+  skill_id   String
+  title      String?
+  pass_mark  Int?
+  is_active  Boolean?  @default(true)
+  created_at DateTime? @default(now())
+
+  skill    skills_master              @relation(fields: [skill_id], references: [id])
+  attempts user_assessment_attempts[]
+}
+
+model user_assessment_attempts {
+  id            String    @id @default(uuid())
+  user_id       String
+  assessment_id String
+  score         Int?
+  status        String?   @db.VarChar(20) // passed, failed, pending
+  attempted_at  DateTime?
+
+  user       users              @relation(fields: [user_id], references: [id])
+  assessment assessments_master @relation(fields: [assessment_id], references: [id])
+}
+
+model chat_sessions {
+  id            String    @id @default(uuid())
+  skill_swap_id String
+  is_active     Boolean?  @default(true)
+  started_at    DateTime?
+  ended_at      DateTime?
+
+  skill_swap    skill_swaps     @relation(fields: [skill_swap_id], references: [id])
+  chat_messages chat_messages[]
+}
+
+model chat_messages {
+  id              String    @id @default(uuid())
+  chat_session_id String
+  sender_id       String
+  message         String?
+  file_url        String?
+  send_at         DateTime?
+
+  chat_session chat_sessions @relation(fields: [chat_session_id], references: [id])
+  sender       users         @relation(fields: [sender_id], references: [id])
+}
