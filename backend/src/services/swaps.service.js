@@ -10,7 +10,7 @@ async function createSwapRequest(user_id, data) {
     throw err;
   }
 
-  return await prisma.skill_swaps.create({
+  await prisma.skill_swaps.create({
     data: {
       request_from: user_id,
       request_to: data.request_to,

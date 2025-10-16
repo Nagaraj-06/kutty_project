@@ -6,14 +6,14 @@ const { getMessagesSchema } = require("./schema");
 
 /**
  * @swagger
- * /private/api/chat/{chat_session_id}:
+ * /private/api/chat:
  *   get:
  *     summary: Get all messages of a chat session
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: chat_session_id
  *         required: true
  *         schema:
@@ -21,8 +21,13 @@ const { getMessagesSchema } = require("./schema");
  *         description: Chat session ID
  *     responses:
  *       200:
- *         description: List of messages
+ *         description: List of messages for chat-session
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetChatResponse'
  */
+
 router.get(
   "/get_chat",
   validate(getMessagesSchema, "query"),

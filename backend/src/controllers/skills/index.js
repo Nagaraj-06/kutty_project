@@ -11,7 +11,7 @@ async function addOrUpdateSkill(req, res, next) {
       throw err;
     }
 
-    const skill = await skillService.addOrUpdateSkill(
+    await skillService.addOrUpdateSkill(
       user_id,
       skill_id,
       skill_type,
@@ -22,7 +22,6 @@ async function addOrUpdateSkill(req, res, next) {
     res.json({
       success: true,
       message: "Skill added/updated successfully",
-      data: skill,
     });
   } catch (err) {
     next(err);
@@ -72,7 +71,7 @@ async function getSkills(req, res, next) {
 async function removeUserSkill(req, res, next) {
   try {
     const user_id = req.user.id;
-    const { skill_id } = req.params;
+    const { skill_id } = req.query;
 
     if (!skill_id) {
       const err = new Error("skill_id is required");

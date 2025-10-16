@@ -6,8 +6,10 @@ const swapService = require("../../services/swaps.service");
 async function createSwap(req, res, next) {
   try {
     const user_id = req.user.id;
-    const swap = await swapService.createSwapRequest(user_id, req.body);
-    res.status(201).json({ success: true, data: swap });
+    await swapService.createSwapRequest(user_id, req.body);
+    res
+      .status(201)
+      .json({ success: true, message: "Swap request created successfully" });
   } catch (err) {
     next(err);
   }

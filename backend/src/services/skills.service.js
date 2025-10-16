@@ -8,7 +8,7 @@ async function addOrUpdateSkill(
   status = null,
   average_rating = null
 ) {
-  return prisma.user_skills.upsert({
+  await prisma.user_skills.upsert({
     where: {
       user_id_skill_id: {
         user_id,
@@ -57,13 +57,30 @@ async function getUsersSkills() {
           name: true,
         },
       },
+      user: {
+        select: {
+          id: true,
+          email: true,
+          user_name: true,
+        },
+      },
     },
   });
 }
 
 // Get user skills
 async function getUserSkills(user_id) {
-  return prisma.user_skills.findMany({ where: { user_id } });
+  return prisma.user_skills.findMany({
+    where: { user_id, is_active: true },
+    include: {
+      skill: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
 }
 
 module.exports = {

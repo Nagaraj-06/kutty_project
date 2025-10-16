@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `user_skills` MODIFY `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'INACTIVE';

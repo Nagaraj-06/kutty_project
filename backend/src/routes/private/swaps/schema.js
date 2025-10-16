@@ -27,8 +27,16 @@ const swapResponseSchema = Joi.object({
   updated_at: Joi.date(),
 });
 
+
+const createSwapResponseSchema = Joi.object({
+  success: Joi.boolean().example(true),
+  message: Joi.string().example("Swap request created successfully"),
+});
+
+
 module.exports = {
   createSwapSchema,
+  createSwapResponseSchema,
   updateStatusSchema,
   swapResponseSchema,
 };

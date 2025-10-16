@@ -26,12 +26,19 @@ const {
 const {
   addUserSkillSchema,
   removeUserSkillSchema,
+  addUserSkillResponseSchema,
+  getSkillsResponseSchema,
+  getUserSkillsResponseSchema,
+  getUsersSkillsResponseSchema,
+  removeUserSkillResponseSchema,
 } = require("../routes/private/skills/schema");
 const {
   createSwapSchema,
   updateStatusSchema,
   swapResponseSchema,
+  createSwapResponseSchema
 } = require("../routes/private/swaps/schema");
+const { getChatResponseSchema } = require("../routes/private/chat/schema");
 
 const signUpSwagger = convertJoiToSwagger(signUpSchema);
 const signInSwagger = convertJoiToSwagger(signInSchema);
@@ -49,6 +56,9 @@ const profileSwagger = convertJoiToSwagger(updateProfileSchema);
 const availabilitySwagger = convertJoiToSwagger(updateAvailabilitySchema);
 const addSkillSwagger = convertJoiToSwagger(addUserSkillSchema);
 const removeSkillSwagger = convertJoiToSwagger(removeUserSkillSchema);
+const removeUserSkillResponseSwagger = convertJoiToSwagger(
+  removeUserSkillResponseSchema
+);
 const updateStatusSwagger = convertJoiToSwagger(updateStatusSchema);
 const createSwapSwagger = convertJoiToSwagger(createSwapSchema);
 const swapResponseSwagger = convertJoiToSwagger(swapResponseSchema);
@@ -59,6 +69,12 @@ const updateUserAvailabilitySwagger = convertJoiToSwagger(
 const getUserAvailabilitySwagger = convertJoiToSwagger(
   getUserAvailabilityResponseSchema
 );
+const getChatSwaggerSchema = convertJoiToSwagger(getChatResponseSchema);
+const addUserSkillSwagger = convertJoiToSwagger(addUserSkillResponseSchema);
+const getSkillsSwagger = convertJoiToSwagger(getSkillsResponseSchema);
+const getUserSkillsSwagger = convertJoiToSwagger(getUserSkillsResponseSchema);
+const getUsersSkillsSwagger = convertJoiToSwagger(getUsersSkillsResponseSchema);
+const createSwapResponseSwagger = convertJoiToSwagger(createSwapResponseSchema);
 
 const options = {
   definition: {
@@ -85,9 +101,16 @@ const options = {
         GetUserAvailabilityResponse: getUserAvailabilitySwagger,
         addOrUpdateSkill: addSkillSwagger,
         RemoveUserSkill: removeSkillSwagger,
+        RemoveSkillResponse: removeUserSkillResponseSwagger,
         createSwapSwagger: createSwapSwagger,
         updateStatusSwagger: updateStatusSwagger,
         swapResponseSwagger: swapResponseSwagger,
+        GetChatResponse: getChatSwaggerSchema,
+        AddUserSkillResponse: addUserSkillSwagger,
+        GetSkillsResponse: getSkillsSwagger,
+        GetUserSkillsResponse: getUserSkillsSwagger,
+        GetUsersSkillsResponse: getUsersSkillsSwagger,
+        createSwapResponseSwagger: createSwapResponseSwagger,
       },
     },
   },

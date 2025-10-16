@@ -25,8 +25,10 @@ const {
  *     responses:
  *       201:
  *         description: Swap request created successfully
- *       400:
- *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/createSwapResponseSwagger'
  */
 router.post("/", validate(createSwapSchema), swapController.createSwap);
 

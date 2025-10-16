@@ -26,8 +26,12 @@ const { addUserSkillSchema, removeUserSkillSchema } = require("./schema");
  *           schema:
  *             $ref: '#/components/schemas/addOrUpdateSkill'
  *     responses:
- *       201:
- *         description: Skill added/updated successfully
+ *       200:
+ *         description: Skill added or updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AddUserSkillResponse'
  */
 
 // add or update - user skills
@@ -37,14 +41,19 @@ router.post("/add_user_skill", validate(addUserSkillSchema), addOrUpdateSkill);
  * @swagger
  * /private/api/skills:
  *   get:
- *     summary: Get all Skills
+ *     summary: Get all master skills
  *     tags: [Skills]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all Skills
+ *         description: List of skills
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetSkillsResponse'
  */
+
 router.get("/", getSkills);
 
 /**
@@ -58,6 +67,10 @@ router.get("/", getSkills);
  *     responses:
  *       200:
  *         description: List of user skills
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetUserSkillsResponse'
  */
 router.get("/user_skills", getUserSkills); // Get user skills
 
@@ -71,28 +84,40 @@ router.get("/user_skills", getUserSkills); // Get user skills
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all users skills
+ *         description: List of user skills
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetUsersSkillsResponse'
  */
 router.get("/users_skills", getUsersSkills); // Get users skills
 
 /**
  * @swagger
- * /private/api/skills/{skill_id}:
+ * /private/api/remove_user_skill:
  *   delete:
- *     summary: Remove a skill (soft delete)
+ *     summary: remove a user skill (soft delete)
  *     tags: [Skills]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - name: skill_id
- *         in: path
+ *         in: query
  *         required: true
  *         schema:
  *           type: string
  *     responses:
  *       200:
  *         description: Skill removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/RemoveSkillResponse'
  */
-router.delete("/:skill_id", validate(removeUserSkillSchema), removeUserSkill);
+router.delete(
+  "/remove_user_skill",
+  validate(removeUserSkillSchema),
+  removeUserSkill
+);
 
 module.exports = router;
