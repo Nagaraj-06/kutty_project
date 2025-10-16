@@ -5,3 +5,7 @@ client/dist
 # backend stuff
 backend/node_modules
 backend/.env
+
+backend/prisma/migrations
+
+backend/prisma/schema.sql
