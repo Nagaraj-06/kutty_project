@@ -1,6 +1,5 @@
 const express = require("express");
 const {
-  addOrUpdateSkill,
   getUserSkills,
   getUsersSkills,
   removeUserSkill,
@@ -9,33 +8,7 @@ const {
 
 const router = express.Router();
 const validate = require("../../../middlewares/validate.middleware");
-const { addUserSkillSchema, removeUserSkillSchema } = require("./schema");
-
-/**
- * @swagger
- * /private/api/skills/add_user_skill:
- *   post:
- *     summary: Add or update a skill for the user
- *     tags: [Skills]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/addOrUpdateSkill'
- *     responses:
- *       200:
- *         description: Skill added or updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AddUserSkillResponse'
- */
-
-// add or update - user skills
-router.post("/add_user_skill", validate(addUserSkillSchema), addOrUpdateSkill);
+const { removeUserSkillSchema } = require("./schema");
 
 /**
  * @swagger

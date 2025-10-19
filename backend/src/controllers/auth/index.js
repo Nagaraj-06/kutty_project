@@ -1,16 +1,18 @@
-const { signupUser, loginUser } = require("../../services/auth.service");
+const {
+  signupUser,
+  loginUser,
+  verifyEmailService,
+} = require("../../services/auth.service");
 
 // Signup
 async function signUp(req, res, next) {
   const { user_name, email, password } = req.body;
 
-  // Service handles validation + throws error if invalid
-  const { user } = await signupUser({ user_name, email, password });
+  const result = await signupUser({ user_name, email, password });
 
   res.status(201).json({
     success: true,
-    message: "User registered successfully",
-    user: { id: user.id, email: user.email },
+    ...result,
   });
 }
 
@@ -28,4 +30,25 @@ async function signIn(req, res, next) {
   });
 }
 
-module.exports = { signUp, signIn };
+async function verifyEmailController(req, res, next) {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      const err = new Error("Verification token is required");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const result = await verifyEmailService(token);
+
+    res.json({
+      success: true,
+      message: result.message,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { signUp, signIn, verifyEmailController };

@@ -6,6 +6,7 @@ const {
   signInSchema,
   signUpResponseSchema,
   signInResponseSchema,
+  verifyEmailResponseSchema,
 } = require("../routes/public/auth/schema");
 
 const {
@@ -19,12 +20,11 @@ const {
   updateProfileSchema,
   updateAvailabilitySchema,
   updateProfileResponseSchema,
-  updateUserAvailabilityResponseSchema,
-  getUserAvailabilityResponseSchema,
+  userProfileResponseSchema,
 } = require("../routes/private/users/schema");
 
 const {
-  addUserSkillSchema,
+  // addUserSkillSchema,
   removeUserSkillSchema,
   addUserSkillResponseSchema,
   getSkillsResponseSchema,
@@ -36,9 +36,19 @@ const {
   createSwapSchema,
   updateStatusSchema,
   swapResponseSchema,
-  createSwapResponseSchema
+  createSwapResponseSchema,
+  markCompleteRequestSchema,
+  markCompleteResponseSchema,
 } = require("../routes/private/swaps/schema");
-const { getChatResponseSchema } = require("../routes/private/chat/schema");
+const {
+  getChatResponseSchema,
+  getChatListResponseSchema,
+} = require("../routes/private/chat/schema");
+const {
+  giveFeedbackRequestSchema,
+  giveFeedbackResponseSchema,
+  getFeedbacksResponseSchema,
+} = require("../routes/private/feedback/schema");
 
 const signUpSwagger = convertJoiToSwagger(signUpSchema);
 const signInSwagger = convertJoiToSwagger(signInSchema);
@@ -54,7 +64,7 @@ const forgetPasswordResetSwagger = convertJoiToSwagger(
 );
 const profileSwagger = convertJoiToSwagger(updateProfileSchema);
 const availabilitySwagger = convertJoiToSwagger(updateAvailabilitySchema);
-const addSkillSwagger = convertJoiToSwagger(addUserSkillSchema);
+// const addSkillSwagger = convertJoiToSwagger(addUserSkillSchema);
 const removeSkillSwagger = convertJoiToSwagger(removeUserSkillSchema);
 const removeUserSkillResponseSwagger = convertJoiToSwagger(
   removeUserSkillResponseSchema
@@ -63,11 +73,8 @@ const updateStatusSwagger = convertJoiToSwagger(updateStatusSchema);
 const createSwapSwagger = convertJoiToSwagger(createSwapSchema);
 const swapResponseSwagger = convertJoiToSwagger(swapResponseSchema);
 const updateProfileSwagger = convertJoiToSwagger(updateProfileResponseSchema);
-const updateUserAvailabilitySwagger = convertJoiToSwagger(
-  updateUserAvailabilityResponseSchema
-);
-const getUserAvailabilitySwagger = convertJoiToSwagger(
-  getUserAvailabilityResponseSchema
+const GetUserProfileResponseSwagger = convertJoiToSwagger(
+  userProfileResponseSchema
 );
 const getChatSwaggerSchema = convertJoiToSwagger(getChatResponseSchema);
 const addUserSkillSwagger = convertJoiToSwagger(addUserSkillResponseSchema);
@@ -75,6 +82,13 @@ const getSkillsSwagger = convertJoiToSwagger(getSkillsResponseSchema);
 const getUserSkillsSwagger = convertJoiToSwagger(getUserSkillsResponseSchema);
 const getUsersSkillsSwagger = convertJoiToSwagger(getUsersSkillsResponseSchema);
 const createSwapResponseSwagger = convertJoiToSwagger(createSwapResponseSchema);
+const getChatListSwagger = convertJoiToSwagger(getChatListResponseSchema);
+const giveFeedbackSwaggerReq = convertJoiToSwagger(giveFeedbackRequestSchema);
+const giveFeedbackSwaggerRes = convertJoiToSwagger(giveFeedbackResponseSchema);
+const markCompleteSwaggerReq = convertJoiToSwagger(markCompleteRequestSchema);
+const markCompleteSwaggerRes = convertJoiToSwagger(markCompleteResponseSchema);
+const verifyEmailSwaggerRes = convertJoiToSwagger(verifyEmailResponseSchema);
+const getFeedbacksSwaggerRes = convertJoiToSwagger(getFeedbacksResponseSchema);
 
 const options = {
   definition: {
@@ -97,9 +111,8 @@ const options = {
         UpdateProfile: profileSwagger,
         UpdateAvailability: availabilitySwagger,
         UpdateProfileResponse: updateProfileSwagger,
-        UpdateUserAvailabilityResponse: updateUserAvailabilitySwagger,
-        GetUserAvailabilityResponse: getUserAvailabilitySwagger,
-        addOrUpdateSkill: addSkillSwagger,
+        GetUserProfileResponse: GetUserProfileResponseSwagger,
+        // addOrUpdateSkill: addSkillSwagger,
         RemoveUserSkill: removeSkillSwagger,
         RemoveSkillResponse: removeUserSkillResponseSwagger,
         createSwapSwagger: createSwapSwagger,
@@ -111,8 +124,27 @@ const options = {
         GetUserSkillsResponse: getUserSkillsSwagger,
         GetUsersSkillsResponse: getUsersSkillsSwagger,
         createSwapResponseSwagger: createSwapResponseSwagger,
+        GetChatListResponse: getChatListSwagger,
+        GiveFeedbackRequest: giveFeedbackSwaggerReq,
+        GiveFeedbackResponse: giveFeedbackSwaggerRes,
+        MarkCompleteRequest: markCompleteSwaggerReq,
+        MarkCompleteResponse: markCompleteSwaggerRes,
+        VerifyEmailResponse: verifyEmailSwaggerRes,
+        GetFeedbacksResponse: getFeedbacksSwaggerRes,
+      },
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT", // optional
+        },
       },
     },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: ["./src/routes/**/*.js"],
 };

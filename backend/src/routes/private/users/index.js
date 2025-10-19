@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const {
   updateProfile,
-  updateAvailability,
-  getUserAvailabilityController,
+  user_profile_details,
 } = require("../../../controllers/users");
 const { updateProfileSchema, updateAvailabilitySchema } = require("./schema");
 const validate = require("../../../middlewares/validate.middleware");
+const upload = require("../../../middlewares/uploadMiddleware");
 
 /**
  * @swagger
@@ -30,52 +30,29 @@ const validate = require("../../../middlewares/validate.middleware");
  *             schema:
  *               $ref: '#/components/schemas/UpdateProfileResponse'
  */
-router.patch("/update_profile", validate(updateProfileSchema), updateProfile);
-
-/**
- * @swagger
- * /private/api/users/update_user_availability:
- *   patch:
- *     summary: Update user availability slots
- *     tags: [Availability]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateAvailability'
- *     responses:
- *       200:
- *         description: Availability updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UpdateUserAvailabilityResponse'
- */
 router.patch(
-  "/update_user_availability",
-  validate(updateAvailabilitySchema),
-  updateAvailability
+  "/update_profile",
+  validate(updateProfileSchema),
+  upload.single("profile_pic"),
+  updateProfile
 );
 
 /**
  * @swagger
- * /private/api/users/get_user_availability:
+ * /private/api/users/user_profile_details:
  *   get:
- *     summary: Get user availability time slots
- *     tags: [Availability]
+ *     summary: Get user_profile_details
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Availability fetched successfully
+ *         description: profile details fetched successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/GetUserAvailabilityResponse'
+ *               $ref: '#/components/schemas/GetUserProfileResponse'
  */
-router.get("/get_user_availability", getUserAvailabilityController);
+router.get("/user_profile_details", user_profile_details);
 
 module.exports = router;

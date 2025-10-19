@@ -8,11 +8,8 @@ const signUpSchema = Joi.object({
 
 const signUpResponseSchema = Joi.object({
   success: Joi.boolean().example(true),
-  message: Joi.string().example("User registered successfully"),
-  user: Joi.object({
-    id: Joi.string().example("e3a1f93c-5d8f-4c4b-a7c9-8c12dca29a0e"),
-    email: Joi.string().email().example("user@example.com"),
-  }),
+  message: Joi.string().example("Verification email sent"),
+  email: Joi.string().email().example("user@example.com"),
 });
 
 const signInSchema = Joi.object({
@@ -30,9 +27,14 @@ const signInResponseSchema = Joi.object({
   token: Joi.string().example("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."),
 });
 
+const verifyEmailResponseSchema = Joi.object({
+  message: Joi.string().example("Email verified successfully!"),
+});
+
 module.exports = {
   signUpSchema,
   signInSchema,
   signUpResponseSchema,
   signInResponseSchema,
+  verifyEmailResponseSchema,
 };

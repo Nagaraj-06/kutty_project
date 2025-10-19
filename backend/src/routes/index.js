@@ -11,18 +11,18 @@ const users = require("./private/users");
 const skillRoutes = require("./private/skills"); // ./skills/index.js
 const swapRoutes = require("./private/swaps"); // ./swaps/index.js
 const chatRoutes = require("./private/chat");
-// const feedbackRoutes = require("./private/feedback"); // ./feedback/index.js
+const feedbackRoutes = require("./private/feedback"); // ./feedback/index.js
 
 // Mount routes with prefixes
 router.use("/public/api/auth", authRoutes);
 router.use("/public/api/forget_password", forgetPasswordRoutes);
 
 router.use("/private/api/swaps", authMiddleware, swapRoutes);
-// router.use("/private/api/feedback", feedbackRoutes);
 router.use("/private/api/users", authMiddleware, users);
 
 router.use("/private/api/skills", authMiddleware, skillRoutes);
-router.use("/private/api/chat", authMiddleware,chatRoutes);
+router.use("/private/api/chat", authMiddleware, chatRoutes);
+router.use("/private/api/feedback", authMiddleware, feedbackRoutes);
 
 // Uuse the authMiddleware -> to all private-routes
 

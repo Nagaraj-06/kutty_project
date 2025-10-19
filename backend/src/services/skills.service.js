@@ -45,25 +45,53 @@ async function getSkills() {
 }
 
 // Get users skills
-async function getUsersSkills() {
+async function getUsersSkills(currentUserId) {
+  // Step 1: Get all active swap relationships involving current user
+  const activeSwaps = await prisma.skill_swaps.findMany({
+    where: {
+      OR: [{ request_from: currentUserId }, { request_to: currentUserId }],
+      status: { in: ["PENDING", "ACCEPTED"] },
+      is_active: true,
+    },
+    select: {
+      request_from: true,
+      request_to: true,
+    },
+  });
+
+  // Step 2: Extract user IDs who have active swaps with current user
+  const usersWithActiveSwaps = new Set(
+    activeSwaps.flatMap((swap) => [swap.request_from, swap.request_to])
+  );
+  usersWithActiveSwaps.delete(currentUserId); // Remove current user from set
+
+  // Step 3: Get all skills from users who DON'T have active swaps
   return prisma.user_skills.findMany({
     where: {
       is_active: true,
+      user_id: {
+        not: currentUserId,
+        notIn: Array.from(usersWithActiveSwaps),
+      },
     },
-    include: {
+    select: {
+      id: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          user_name: true,
+          profile_pic_url: true,
+        },
+      },
       skill: {
         select: {
           id: true,
           name: true,
         },
       },
-      user: {
-        select: {
-          id: true,
-          email: true,
-          user_name: true,
-        },
-      },
+      skill_type: true,
+      average_rating: true,
     },
   });
 }
@@ -72,13 +100,16 @@ async function getUsersSkills() {
 async function getUserSkills(user_id) {
   return prisma.user_skills.findMany({
     where: { user_id, is_active: true },
-    include: {
+    select: {
+      id: true,
+      skill_type: true,
       skill: {
         select: {
           id: true,
           name: true,
         },
       },
+      average_rating: true,
     },
   });
 }

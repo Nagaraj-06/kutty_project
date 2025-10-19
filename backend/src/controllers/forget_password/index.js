@@ -7,25 +7,24 @@ const {
 async function requestReset(req, res, next) {
   const { email } = req.body;
 
-  const result = await requestPasswordReset(email);
-
-  res.status(200).json({
-    success: true,
-    message: result.message,
-    token: result.token, // For testing only → in real apps, don’t send token in response
-  });
+  try {
+    const { email } = req.body;
+    const result = await requestPasswordReset(email);
+    res.status(200).json({ success: true, ...result });
+  } catch (err) {
+    next(err);
+  }
 }
 
 // Reset password with token
 async function reset(req, res, next) {
-  const { token, newPassword } = req.body;
-
-  const result = await resetPassword(token, newPassword);
-
-  res.status(200).json({
-    success: true,
-    message: result.message,
-  });
+  try {
+    const { token, newPassword } = req.body;
+    const result = await resetPassword(token, newPassword);
+    res.status(200).json({ success: true, ...result });
+  } catch (err) {
+    next(err);
+  }
 }
 
 module.exports = { requestReset, reset };

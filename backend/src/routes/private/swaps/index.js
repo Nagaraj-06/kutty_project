@@ -6,6 +6,7 @@ const {
   createSwapSchema,
   updateStatusSchema,
   swapResponseSchema,
+  markCompleteValidation,
 } = require("./schema");
 
 /**
@@ -34,7 +35,7 @@ router.post("/", validate(createSwapSchema), swapController.createSwap);
 
 /**
  * @swagger
- * /private/api/swaps/update_status
+ * /private/api/swaps/update_status:
  *   patch:
  *     summary: Update swap request status (accept/reject)
  *     description: Updates the status of a skill swap by its ID (sent as a query parameter).
@@ -42,7 +43,7 @@ router.post("/", validate(createSwapSchema), swapController.createSwap);
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: id
  *         required: true
  *         schema:
@@ -62,13 +63,13 @@ router.post("/", validate(createSwapSchema), swapController.createSwap);
  */
 router.patch(
   "/update_status",
-  validate(updateStatusSchema),
+  validate(updateStatusSchema, "query"),
   swapController.updateStatus
 );
 
 /**
  * @swagger
- * /private/api/swaps:
+ * /private/api/swaps/get_user_swaps:
  *   get:
  *     summary: Get all swap requests for the current user
  *     tags: [Swaps]
@@ -88,6 +89,62 @@ router.get(
   "/get_user_swaps",
   validate(swapResponseSchema),
   swapController.getRequests
+);
+
+/**
+ * @swagger
+ * /private/api/swaps/mark_complete:
+ *   patch:
+ *     summary: Mark a skill swap as completed
+ *     description: Marks the skill swap as completed if the user is one of the participants and the swap is active.
+ *     tags: [Swaps]
+ *     parameters:
+ *       - in: query
+ *         name: skill_swap_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the skill swap to be marked complete
+ *     responses:
+ *       200:
+ *         description: Skill swap marked as completed successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               message: "Skill swap completed successfully!"
+ *               data:
+ *                 id: "skill_swap_id"
+ *                 status: "COMPLETED"
+ *                 completed_by_from: true
+ *                 completed_by_to: true
+ *       400:
+ *         description: Skill swap not in active state
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Skill swap is not in an active state"
+ *       403:
+ *         description: User is not a participant in this swap
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "You are not a participant in this swap"
+ *       404:
+ *         description: Skill swap not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Skill swap not found"
+ */
+
+router.patch(
+  "/mark_complete",
+  validate(markCompleteValidation),
+  swapController.markSkillSwapComplete
 );
 
 module.exports = router;

@@ -1,6 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
+const sgMail = require("../config/sendgrid");
+require("dotenv").config(); // Load .env
 
 const prisma = new PrismaClient();
 
@@ -13,42 +15,63 @@ async function requestPasswordReset(email) {
     throw err;
   }
 
-  const resetToken = uuidv4();
+  const token = uuidv4();
 
+  // 3️⃣ Save token in DB
   await prisma.reset_tokens.create({
     data: {
+      token,
       user_id: user.id,
-      token: resetToken,
-      token_expiry: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+      token_expiry: new Date(Date.now() + 3600 * 1000), // 1 hour expiration
+      used: false,
     },
   });
 
-  // In real-world → send email with link
-  return { message: "Password reset link sent", token: resetToken };
+  // 4️⃣ Create reset link
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+  // 5️⃣ Send email via SendGrid
+  const msg = {
+    to: email,
+    from: process.env.FROM_EMAIL, // verified sender in SendGrid
+    subject: "Password Reset Request",
+    text: "Password Reset Confirmation",
+    html: `<p>Hello ${user.user_name},</p>
+           <p>Click the link below to reset your password:</p>
+           <a href="${resetLink}">Reset Password</a>
+           <p>This link will expire in 1 hour.</p>`,
+  };
+
+  await sgMail.send(msg);
+
+  return { message: "Reset link sent to email" };
 }
 
-// 🔹 Reset password using token
+// Reset password using token
 async function resetPassword(token, newPassword) {
-  const resetRequest = await prisma.reset_tokens.findUnique({
-    where: { token },
+  // Find the reset token
+  const resetToken = await prisma.reset_tokens.findFirst({
+    where: { token, used: false, token_expiry: { gt: new Date() } },
   });
 
-  if (!resetRequest || resetRequest.expiresAt < new Date()) {
-    const err = new Error("Invalid or expired token");
-    err.statusCode = 400;
-    throw err;
-  }
+  if (!resetToken) throw new Error("Invalid or expired token");
 
+  // Hash the new password
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
+  // Update user's password
   await prisma.users.update({
-    where: { id: resetRequest.user_id },
+    where: { id: resetToken.user_id },
     data: { password_hash: hashedPassword },
   });
 
-  await prisma.reset_tokens.delete({ where: { token } });
+  // Mark token as used
+  await prisma.reset_tokens.update({
+    where: { id: resetToken.id },
+    data: { used: true },
+  });
 
-  return { message: "Password reset successfully" };
+  return { message: "Password reset successful" };
 }
 
 module.exports = { requestPasswordReset, resetPassword };

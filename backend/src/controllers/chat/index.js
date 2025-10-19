@@ -18,6 +18,21 @@ async function getMessages(req, res, next) {
   }
 }
 
+async function getChatList(req, res, next) {
+  try {
+    const userId = req.user.id; // from token middleware
+    const chatList = await chatService.getChatListService(userId);
+    res.status(200).json({
+      success: true,
+      message: "Chat list fetched successfully",
+      data: chatList,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getMessages,
+  getChatList,
 };

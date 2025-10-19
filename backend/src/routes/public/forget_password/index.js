@@ -9,7 +9,7 @@ const validate = require("../../../middlewares/validate.middleware");
  * @swagger
  * /public/api/forget_password/request:
  *   post:
- *     summary: Request password reset token. use this token to Reset the Password (for testing purpose). Later we are implement the email-link feature 
+ *     summary: check your mail and vefiy within - 1 hour expiration
  *     tags: [ForgetPassword]
  *     requestBody:
  *       required: true
@@ -27,27 +27,5 @@ const validate = require("../../../middlewares/validate.middleware");
  */
 
 router.post("/request", validate(requestResetSchema), requestReset);
-
-/**
- * @swagger
- * /public/api/forget_password/reset:
- *   post:
- *     summary: Reset password using token
- *     tags: [ForgetPassword]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ResetPassword'
- *     responses:
- *       200:
- *         description: Password reset successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ForgetPasswordResetResponse'
- */
-router.post("/reset", validate(resetSchema), reset);
 
 module.exports = router;

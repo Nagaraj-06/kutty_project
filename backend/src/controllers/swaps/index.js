@@ -49,8 +49,32 @@ async function getRequests(req, res, next) {
   }
 }
 
+async function markSkillSwapComplete(req, res, next) {
+  try {
+    const user_id = req.user.id;
+    const { skill_swap_id } = req.query;
+
+    const updatedSwap = await swapService.markSkillSwapComplete(
+      user_id,
+      skill_swap_id
+    );
+
+    res.json({
+      success: true,
+      message:
+        updatedSwap.status === "COMPLETED"
+          ? "Skill swap completed successfully!"
+          : "Completion marked. Waiting for the other user to confirm.",
+      data: updatedSwap,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createSwap,
   updateStatus,
   getRequests,
+  markSkillSwapComplete,
 };

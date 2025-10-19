@@ -3,9 +3,21 @@ require("./config/env"); // Load .env
 const routes = require("../src/routes");
 const errorMiddleware = require("./middlewares/error.middleware");
 const app = express();
+const path = require("path");
 const swaggerDocs = require("./config/swagger");
+const cors = require("cors");
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
+app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // Routes
 app.get("/", (req, res) => res.send("API is running"));

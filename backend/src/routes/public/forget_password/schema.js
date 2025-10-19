@@ -7,8 +7,7 @@ const requestResetSchema = Joi.object({
 
 const forgetPasswordRequestResponseSchema = Joi.object({
   success: Joi.boolean().example(true),
-  message: Joi.string().example("Password reset link generated successfully"),
-  token: Joi.string().example("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."), // For testing only
+  message: Joi.string().example("Reset link sent to email"),
 });
 
 // Reset password using token

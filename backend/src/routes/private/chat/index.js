@@ -34,4 +34,23 @@ router.get(
   chatController.getMessages
 );
 
+/**
+ * @swagger
+ * /private/api/chat/chat_list:
+ *   get:
+ *     summary: Get list of chat sessions for the user
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Chat list fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetChatListResponse'
+ */
+
+router.get("/chat_list", chatController.getChatList);
+
 module.exports = router;
