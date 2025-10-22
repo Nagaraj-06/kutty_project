@@ -1,5 +1,7 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const { host } = require("../config/env");
+
 const convertJoiToSwagger = require("../utils/swaggerConverter");
 const {
   signUpSchema,
@@ -153,7 +155,7 @@ const swaggerSpec = swaggerJSDoc(options);
 
 function swaggerDocs(app) {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log("📘 Swagger Docs available at http://localhost:8080/api-docs");
+  console.log(`📘 Swagger Docs available at ${host}/api-docs`);
 }
 
 module.exports = swaggerDocs;

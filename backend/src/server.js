@@ -2,7 +2,7 @@
 const http = require("http");
 const app = require("./app");
 const { connectDB } = require("./config/db");
-const { port } = require("./config/env");
+const { host, port } = require("./config/env");
 const { setupSocket } = require("./socket");
 const { Server } = require("socket.io");
 const { ExpressPeerServer } = require("peer");
@@ -42,8 +42,8 @@ async function startServer() {
   console.log("PeerJS server initialized at /peerjs");
 
   server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-    console.log(`PeerJS available on port ${port} at path /peerjs`);
+    console.log(`Server running on ${host}`);
+    console.log(`PeerJS available on port ${host} at path /peerjs`);
   });
 }
 
