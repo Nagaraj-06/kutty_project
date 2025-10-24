@@ -11,7 +11,7 @@ function ResetPasswordPage() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:8080/public/api/forget_password/reset",
+        "https://kutty-project.onrender.com/public/api/forget_password/reset",
         {
           token,
           newPassword: password,
