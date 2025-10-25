@@ -18,7 +18,7 @@ const updateStatusSchema = Joi.object({
 // Response schema
 const swapResponseSchema = Joi.object({
   id: Joi.string().example("068-f535f585-bf41-e-4aa3f570c7a3631c"),
-  status: "ACCEPTED (Or) PENDING (Or) REJECTED",
+  status: "ACCEPTED (Or) PENDING (Or) REJECTED (Or) COMPLETED",
   requestFrom: Joi.object({
     id: Joi.string().example("user123"),
     email: Joi.string().email().example("from@example.com"),

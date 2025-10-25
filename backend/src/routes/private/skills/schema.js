@@ -27,8 +27,14 @@ const getSkillsResponseSchema = Joi.object({
   success: Joi.boolean().example(true),
   data: Joi.array().example([
     {
-      id: "aef27bb0ba-ae79-495843--1c98ca7aaeb4",
+      id: "string",
       name: "Networking",
+      is_active: true,
+      created_at: "2025-09-06T11:26:00.849Z",
+    },
+    {
+      id: "string",
+      name: "Python",
       is_active: true,
       created_at: "2025-09-06T11:26:00.849Z",
     },

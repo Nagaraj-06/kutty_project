@@ -9,6 +9,10 @@ async function createMasterSkills(prisma) {
       name: "Python",
       is_active: true,
     },
+    {
+      name: "Photoshop Design",
+      is_active: true,
+    },
   ];
 
   await prisma.skills_master.createMany({

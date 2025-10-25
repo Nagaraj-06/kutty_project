@@ -34,13 +34,15 @@ router.post("/request", validate(requestResetSchema), requestReset);
  *   post:
  *     summary: Reset password
  *     tags: [ForgetPassword]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPassword'
  *     responses:
  *       200:
  *         description: Password reset successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ResetPassword'
  */
 router.post("/reset", validate(resetSchema), reset);
 
