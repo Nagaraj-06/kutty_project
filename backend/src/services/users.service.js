@@ -147,7 +147,7 @@ async function getUserProfileDetails(user_id) {
     availability,
     skills: skills.map((s) => ({
       skill_id: s.skill_id,
-      skill_name: s.skill.skill_name,
+      skill_name: s.skill.name,
       skill_type: s.skill_type,
       status: s.status,
       average_rating: s.average_rating,
