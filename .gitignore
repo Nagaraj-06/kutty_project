@@ -2,10 +2,17 @@
 client/node_modules
 client/dist
 
+# build output
+client/build
+
+# logs / temp files
+client/build_log.txt
+client/build_log_2.txt
+client/build_log_3.txt
+client/missing_images.txt
+
 # backend stuff
 backend/node_modules
 backend/.env
 
-backend/prisma/migrations
-
-backend/prisma/schema.sql
+backend/README.md
