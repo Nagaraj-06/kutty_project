@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
-import './ExploreMessages.css'
+import './Messages.css'
 
 import AlexImg from "../../assets/images/tq_uc4e4cdbzy-lvmj-200h.png"
 import OliviaImg from "../../assets/images/tq_lmsrdu5xwm-8gq9-200h.png"
@@ -11,7 +11,7 @@ import LiamImg from "../../assets/images/tq_iam9e-lw4s-fx9-200h.png"
 import UserProfileImg from "../../assets/images/tq_axxqdx3cqk-n5oc-200h.png"
 import EthanCarterImg from "../../assets/images/tq_lp9_4etwck-4tnq-200h.png"
 
-const ExploreMessages = (props) => {
+const Messages = (props) => {
     const history = useHistory()
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -65,48 +65,6 @@ const ExploreMessages = (props) => {
             </Helmet>
             <div className="screen18-thq-screen18-elm">
                 <div className="screen18-thq-depth1-frame0-elm">
-                    <div className="screen18-thq-depth2-frame0-elm">
-                        <div className="screen18-thq-depth3-frame2-elm">
-                            <img
-                                src="/depth5frame02272-ifv.svg"
-                                alt="Depth5Frame02272"
-                                className="screen18-thq-depth5-frame0-elm10"
-                            />
-                            <div className="screen18-thq-depth4-frame1-elm1">
-                                <span className="screen18-thq-text-elm10">
-                                    Skill Swap Platform
-                                </span>
-                            </div>
-                        </div>
-                        <div className="screen18-thq-depth3-frame1-elm">
-                            <div
-                                className="screen18-thq-depth4-frame0-elm1"
-                                onClick={() => navigate('/')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <div className="screen18-thq-depth5-frame0-elm11">
-                                    <span className="screen18-thq-text-elm11">Home</span>
-                                </div>
-                            </div>
-                            <div
-                                className="screen18-thq-depth4-frame1-elm2"
-                                onClick={() => navigate('/explore')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <div className="screen18-thq-depth5-frame0-elm12">
-                                    <span className="screen18-thq-text-elm12">Explore</span>
-                                </div>
-                            </div>
-                            <div
-                                className="screen18-thq-depth4-frame2-elm1"
-                                onClick={() => navigate('/profile')}
-                                style={{
-                                    cursor: 'pointer',
-                                    backgroundImage: `url(${UserProfileImg})`
-                                }}
-                            ></div>
-                        </div>
-                    </div>
                     <div className="screen18-thq-depth2-frame1-elm">
                         <div className="screen18-thq-depth3-frame0-elm">
                             <div className="screen18-thq-depth4-frame0-elm2">
@@ -185,4 +143,4 @@ const ExploreMessages = (props) => {
     )
 }
 
-export default ExploreMessages
+export default Messages

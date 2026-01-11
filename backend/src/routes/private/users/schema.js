@@ -22,13 +22,12 @@ const updateProfileSchema = Joi.object({
   is_active: Joi.boolean().optional(),
 
   // Availability slots
-  slots: Joi.array()
-    .items(
+  slots: Joi.alternatives().try(
+    Joi.array().items(
       Joi.object({
         day_of_week: Joi.string()
           .valid(...DAY_OF_WEEK)
           .required(),
-
         from_time: Joi.date().required(),
         to_time: Joi.date().required(),
       }).custom((value, helpers) => {
@@ -37,21 +36,38 @@ const updateProfileSchema = Joi.object({
         }
         return value;
       })
-    )
-    .optional(),
+    ),
+    Joi.string().custom((value, helpers) => {
+      try {
+        const parsed = JSON.parse(value);
+        if (!Array.isArray(parsed)) throw new Error();
+        return value;
+      } catch (e) {
+        return helpers.message('"slots" must be a valid JSON array string');
+      }
+    })
+  ).optional(),
 
   // Skills
-  skills: Joi.array()
-    .items(
+  skills: Joi.alternatives().try(
+    Joi.array().items(
       Joi.object({
         skill_id: Joi.string().required(),
-
         skill_type: Joi.string()
           .valid(...SKILL_TYPE)
           .required(),
       })
-    )
-    .optional(),
+    ),
+    Joi.string().custom((value, helpers) => {
+      try {
+        const parsed = JSON.parse(value);
+        if (!Array.isArray(parsed)) throw new Error();
+        return value;
+      } catch (e) {
+        return helpers.message('"skills" must be a valid JSON array string');
+      }
+    })
+  ).optional(),
 }).unknown(true);
 
 /* ===========================

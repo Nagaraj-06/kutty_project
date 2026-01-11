@@ -46,7 +46,7 @@ async function getSkills() {
 
 // Get users skills
 async function getUsersSkills(currentUserId) {
-  // Step 1: Get all active swap relationships involving current user
+  // Step 1: Get active swaps
   const activeSwaps = await prisma.skill_swaps.findMany({
     where: {
       OR: [{ request_from: currentUserId }, { request_to: currentUserId }],
@@ -59,14 +59,14 @@ async function getUsersSkills(currentUserId) {
     },
   });
 
-  // Step 2: Extract user IDs who have active swaps with current user
+  // Step 2: Users to exclude
   const usersWithActiveSwaps = new Set(
-    activeSwaps.flatMap((swap) => [swap.request_from, swap.request_to])
+    activeSwaps.flatMap(swap => [swap.request_from, swap.request_to])
   );
-  usersWithActiveSwaps.delete(currentUserId); // Remove current user from set
+  usersWithActiveSwaps.delete(currentUserId);
 
-  // Step 3: Get all skills from users who DON'T have active swaps
-  return prisma.user_skills.findMany({
+  // Step 3: Fetch user skills (flat)
+  const rows = await prisma.user_skills.findMany({
     where: {
       is_active: true,
       user_id: {
@@ -75,7 +75,6 @@ async function getUsersSkills(currentUserId) {
       },
     },
     select: {
-      id: true,
       user: {
         select: {
           id: true,
@@ -86,14 +85,39 @@ async function getUsersSkills(currentUserId) {
       },
       skill: {
         select: {
-          id: true,
           name: true,
         },
       },
       skill_type: true,
-      average_rating: true,
     },
   });
+
+  // Step 4: Group by user_id
+  const userMap = {};
+
+  for (const row of rows) {
+    const userId = row.user.id;
+
+    if (!userMap[userId]) {
+      userMap[userId] = {
+        id: userId,
+        email: row.user.email,
+        user_name: row.user.user_name,
+        profile_pic_url: row.user.profile_pic_url,
+        skills_offered: [],
+        skills_wanted: [],
+      };
+    }
+
+    if (row.skill_type === "OFFERING") {
+      userMap[userId].skills_offered.push(row.skill.name);
+    } else if (row.skill_type === "WANTED") {
+      userMap[userId].skills_wanted.push(row.skill.name);
+    }
+  }
+
+  // Step 5: Return user-wise array
+  return Object.values(userMap);
 }
 
 // Get user skills

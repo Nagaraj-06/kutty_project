@@ -25,7 +25,12 @@ async function signIn(req, res, next) {
   res.status(200).json({
     success: true,
     message: "Login successful",
-    user: { id: user.id, email: user.email },
+    user: {
+      id: user.id,
+      email: user.email,
+      user_name: user.user_name,
+      profile_pic_url: user.profile_pic_url
+    },
     token,
   });
 }

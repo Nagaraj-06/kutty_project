@@ -1,71 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
 import "./SkillConnect.css";
-import EthanCarterImg from "../../assets/images/tq_lp9_4etwck-4tnq-200h.png";
-import SophiaClarkImg from "../../assets/images/tq_tx535muzma-ddt-200h.png";
-import LiamFosterImg from "../../assets/images/tq_qrpcz5jygk-9m6qo-200h.png";
-import OliviaHayesImg from "../../assets/images/tq_cef-seuad5-sdpb-200h.png";
-import NoahBennettImg from "../../assets/images/tq_lp9_4etwck-4tnq-200h.png";
-import AvaTurnerImg from "../../assets/images/tq_ceabciosxv-qnxh-200h.png";
+import { useGetUsersSkillsQuery } from "../../store/api/skillsApi";
+import defaultProfilePic from "../../assets/images/default-profile-pic.png";
+import { getImageUrl } from "../../utils/imageUtils";
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSkillConnectSearch, setSkillConnectSearch } from '../../store/slices/filtersSlice';
 
-const SkillConnect = (props) => {
+const SkillConnect = () => {
   const history = useHistory();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [availability, setAvailability] = useState("All");
+  const dispatch = useDispatch();
+  const reduxSearchTerm = useSelector(selectSkillConnectSearch);
+  const [searchTerm, setSearchTerm] = useState(reduxSearchTerm);
+  const [availabilityFilter, setAvailabilityFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 6;
 
-  const users = [
-    {
-      id: 1,
-      name: "Ethan Carter",
-      skillsOffered: "JavaScript, Python",
-      skillsWanted: "Photoshop, Graphic Design",
-      image: EthanCarterImg,
-      availability: "       Available",
-    },
-    {
-      id: 2,
-      name: "Sophia Clark",
-      skillsOffered: "UI/UX Design, Figma",
-      skillsWanted: "Data Analysis, Machine Learning",
-      image: SophiaClarkImg,
-      availability: "Busy",
-    },
-    {
-      id: 3,
-      name: "Liam Foster",
-      skillsOffered: "Photography, Video Editing",
-      skillsWanted: "Spanish, French",
-      image: LiamFosterImg,
-      availability: "Available",
-    },
-    {
-      id: 4,
-      name: "Olivia Hayes",
-      skillsOffered: "Content Writing, SEO",
-      skillsWanted: "Yoga, Meditation",
-      image: OliviaHayesImg,
-      availability: "Available",
-    },
-    {
-      id: 5,
-      name: "Noah Bennett",
-      skillsOffered: "Music Production, DJing",
-      skillsWanted: "Cooking, Baking",
-      image: NoahBennettImg,
-      availability: "Busy",
-    },
-    {
-      id: 6,
-      name: "Ava Turner",
-      skillsOffered: "Marketing, Social Media",
-      skillsWanted: "Web Development, HTML/CSS",
-      image: AvaTurnerImg,
-      availability: "Available",
-    },
-  ];
+  const { data: usersResponse, isLoading, isError } = useGetUsersSkillsQuery();
+
+  useEffect(() => {
+    dispatch(setSkillConnectSearch(searchTerm));
+  }, [searchTerm, dispatch]);
+
+  const users = usersResponse?.data?.map(user => ({
+    id: user.id,
+    name: user.user_name || "Anonymous",
+    skillsOffered: user.skills_offered?.join(", ") || "",
+    skillsWanted: user.skills_wanted?.join(", ") || "",
+    image: getImageUrl(user.profile_pic_url, defaultProfilePic),
+    availability: "Available"
+  })) || [];
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -73,7 +38,7 @@ const SkillConnect = (props) => {
       user.skillsOffered.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.skillsWanted.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesAvailability =
-      availability === "All" || user.availability.trim() === availability;
+      availabilityFilter === "All" || user.availability === availabilityFilter;
     return matchesSearch && matchesAvailability;
   });
 
@@ -84,18 +49,13 @@ const SkillConnect = (props) => {
     startIndex + usersPerPage
   );
 
-  const handleLoginClick = () => {
-    history.push("/login");
+  const navigate = (path) => {
+    history.push(path);
   };
 
-  const handleUserClick = (userId) => {
-    // history.push(`/user/${userId}`);
-    history.push(`/feedbacks`);
-  };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  if (isLoading) return <div className="loading">Loading users...</div>;
+  if (isError) return <div className="loading">Failed to load users. Please try again later.</div>;
 
   return (
     <div className="screen1-container1">
@@ -104,33 +64,6 @@ const SkillConnect = (props) => {
         <meta property="og:title" content="SkillConnect - Skill Swap" />
       </Helmet>
       <div className="screen1-thq-screen1-elm">
-        <div className="screen1-thq-depth2-frame0-elm">
-          <div className="screen1-thq-depth3-frame0-elm1">
-            <div className="screen1-thq-depth4-frame0-elm1">
-              <img
-                src="/depth5frame12111-mn8.svg"
-                alt="Depth5Frame12111"
-                className="screen1-thq-depth5-frame1-elm1"
-              />
-            </div>
-            <div className="screen1-thq-depth4-frame1-elm1">
-              <span className="screen1-thq-text-elm10">
-                Skill Swap Platform
-              </span>
-            </div>
-          </div>
-          <div className="screen1-thq-depth3-frame1-elm">
-            <div className="screen1-thq-depth4-frame0-elm2">
-              <span
-                className="screen1-thq-text-elm11"
-                onClick={handleLoginClick}
-                style={{ cursor: "pointer" }}
-              >
-                Login
-              </span>
-            </div>
-          </div>
-        </div>
         <div className="screen1-thq-depth2-frame1-elm">
           <div className="screen1-thq-depth3-frame0-elm2">
             <div className="screen1-thq-depth4-frame0-elm3">
@@ -139,7 +72,7 @@ const SkillConnect = (props) => {
                   <div className="screen1-thq-depth7-frame0-elm10">
                     <img
                       src="/depth8frame0626-uapf.svg"
-                      alt="Depth8Frame0626"
+                      alt="Search"
                       className="screen1-thq-depth8-frame0-elm10"
                     />
                   </div>
@@ -157,8 +90,8 @@ const SkillConnect = (props) => {
               <div className="screen1-thq-depth5-frame0-elm2">
                 <select
                   className="screen1-availability-select"
-                  value={availability}
-                  onChange={(e) => setAvailability(e.target.value)}
+                  value={availabilityFilter}
+                  onChange={(e) => setAvailabilityFilter(e.target.value)}
                 >
                   <option value="All">Availability</option>
                   <option value="Available">Available</option>
@@ -168,61 +101,50 @@ const SkillConnect = (props) => {
             </div>
             <div className="screen1-thq-depth4-frame2-elm">
               <div className="screen1-thq-depth5-frame0-elm3">
-                {currentUsers.map((user, index) => (
-                  <div
-                    key={user.id}
-                    className={`screen1-thq-depth6-frame${index % 5}-elm`}
-                    onClick={() => handleUserClick(user.id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="screen1-thq-depth7-frame0-elm12">
-                      <div
-                        className="screen1-thq-depth8-frame0-elm11"
-                        style={{
-                          backgroundImage: `url(${user.image})`,
-                          backgroundPosition: "center",
-                          backgroundSize: "cover",
-                          backgroundRepeat: "no-repeat",
-                        }}
-                      ></div>
-                    </div>
-                    <div className="screen1-thq-depth7-frame1-elm2">
-                      <div className="screen1-thq-depth8-frame0-elm12">
-                        <span className="screen1-thq-text-elm14">
-                          {user.name}
-                        </span>
+                {currentUsers.length > 0 ? (
+                  currentUsers.map((user, index) => (
+                    <div
+                      key={user.id}
+                      className={`screen1-thq-depth6-frame${index % 6}-elm`}
+                      onClick={() => navigate(`/feedbacks/${user.id}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div className="screen1-thq-depth7-frame0-elm12">
+                        <div
+                          className="screen1-thq-depth8-frame0-elm11"
+                          style={{
+                            backgroundImage: `url(${user.image})`,
+                            backgroundPosition: "center",
+                            backgroundSize: "110%",
+                            backgroundRepeat: "no-repeat",
+                          }}
+                        ></div>
                       </div>
-                      <div className="screen1-thq-depth8-frame1-elm1">
-                        <span className="screen1-thq-text-elm15">
-                          Skills Offered: {user.skillsOffered} | Skills Wanted:{" "}
-                          {user.skillsWanted}
-                        </span>
+                      <div className="screen1-thq-depth7-frame1-elm2">
+                        <div className="screen1-thq-depth8-frame0-elm12">
+                          <span className="screen1-thq-text-elm14">{user.name}</span>
+                        </div>
+                        <div className="screen1-thq-depth8-frame1-elm1">
+                          <span className="screen1-thq-text-elm15">
+                            Skills Offered: {user.skillsOffered || "None"} | Wanted: {user.skillsWanted || "None"}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="loading" style={{ height: 'auto', padding: '40px' }}>
+                    No users found matching your search.
                   </div>
-                ))}
+                )}
               </div>
             </div>
-            {/* <div className="screen1-thq-depth4-frame3-elm">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    className={`screen1-page-button ${
-                      page === currentPage ? "active" : ""
-                    }`}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
-            </div> */}
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default SkillConnect;

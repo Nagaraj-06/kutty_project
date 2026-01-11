@@ -59,27 +59,7 @@ const Dashboard = (props) => {
             </Helmet>
             <div className="screen14-thq-screen14-elm">
                 <div className="screen14-thq-depth1-frame0-elm">
-                    <div className="screen14-thq-depth2-frame0-elm">
-                        <div className="screen14-thq-depth3-frame2-elm">
-                            <div className="screen14-thq-depth4-frame1-elm1">
-                                <span className="screen14-thq-text-elm10">
-                                    Skill Swap Platform
-                                </span>
-                            </div>
-                        </div>
-                        <div className="screen14-thq-depth3-frame1-elm">
-                            <div className="screen14-thq-depth4-frame0-elm1">
-                                {navItems.map((item, index) => (
-                                    <div key={index} className={`screen14-thq-depth5-frame${index}-elm${index === 0 ? '2' : ''}`}
-                                        onClick={() => history.push(item.path)} style={{ cursor: 'pointer' }}>
-                                        <span className={`screen14-thq-text-elm1${index + 1}`}>{item.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="screen14-thq-depth4-frame2-elm1" onClick={() => history.push('/profile')} style={{ cursor: 'pointer' }}></div>
-                        </div>
 
-                    </div>
                     <div className="screen14-thq-depth2-frame1-elm">
                         <div className="screen14-thq-depth3-frame0-elm">
                             <div className="screen14-thq-depth4-frame0-elm2">

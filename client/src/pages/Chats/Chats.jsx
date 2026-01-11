@@ -1,8 +1,8 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
-import './UserChat.css'
+import './Chats.css'
 
-const UserChat = (props) => {
+const Chats = (props) => {
     return (
         <div className="screen19-container1">
             <Helmet>
@@ -205,4 +205,4 @@ const UserChat = (props) => {
     )
 }
 
-export default UserChat
+export default Chats

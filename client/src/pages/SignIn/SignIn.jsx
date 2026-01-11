@@ -1,25 +1,44 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
+import { useSignupMutation } from '../../store/api/authApi';
 import "./SignIn.css";
 
 const SignIn = (props) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const history = useHistory();
 
+  const [signup, { isLoading }] = useSignupMutation();
+
+
   const handleLoginClick = () => {
-    history.push("/");
+    history.push("/login");
   };
 
-  const handleCreateAccount = () => {
-    console.log({
-      username,
-      email,
-      password,
-    });
+  const handleCreateAccount = async () => {
+    try {
+      setError("");
+      setSuccess("");
+      const response = await signup({
+        user_name: username,
+        email,
+        password
+      }).unwrap();
+
+      setSuccess(response.message || "Account created! Please check your email for verification (check your spam folder as well).");
+
+      // Optionally redirect after a delay
+      // setTimeout(() => history.push("/"), 3000);
+    } catch (err) {
+      setError(err?.data?.message || "Failed to create account. Please try again.");
+      console.error("Signup error:", err);
+    }
   };
+
 
   return (
     <div className="screen3-container1">
@@ -29,37 +48,25 @@ const SignIn = (props) => {
       </Helmet>
       <div className="screen3-thq-screen3-elm">
         <div className="screen3-thq-depth1-frame0-elm">
-          <div className="screen3-thq-depth2-frame0-elm">
-            <div className="screen3-thq-depth3-frame0-elm1">
-              <img
-                src="/depth5frame02111-y69.svg"
-                alt="Depth5Frame02111"
-                className="screen3-thq-depth5-frame0-elm1"
-              />
-              <div className="screen3-thq-depth4-frame1-elm1">
-                <span className="screen3-thq-text-elm10">
-                  Skill Swap Platform
-                </span>
-              </div>
-            </div>
-            <div className="screen3-thq-depth3-frame1-elm">
-              <div className="screen3-thq-depth4-frame0-elm1">
-                <span
-                  className="screen3-thq-text-elm11"
-                  onClick={handleLoginClick}
-                  style={{ cursor: "pointer" }}
-                >
-                  Login
-                </span>
-              </div>
-            </div>
-          </div>
           <div className="screen3-thq-depth2-frame1-elm">
             <div className="screen3-thq-depth3-frame0-elm2">
               <div className="screen3-thq-depth4-frame0-elm2">
                 <span className="screen3-thq-text-elm12">Welcome !!</span>
               </div>
+
+              {error && (
+                <div style={{ color: 'red', marginBottom: '10px', fontSize: '14px' }}>
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div style={{ color: 'green', marginBottom: '10px', fontSize: '14px' }}>
+                  {success}
+                </div>
+              )}
+
               <div className="screen3-thq-depth4-frame1-elm2">
+
                 <div className="screen3-thq-depth5-frame0-elm2">
                   <div className="screen3-thq-depth6-frame0-elm1">
                     <span className="screen3-thq-text-elm13">Username</span>
@@ -105,15 +112,16 @@ const SignIn = (props) => {
               <div className="screen3-thq-depth4-frame4-elm">
                 <div
                   className="screen3-thq-depth5-frame0-elm5"
-                  onClick={handleCreateAccount}
-                  style={{ cursor: "pointer" }}
+                  onClick={!isLoading ? handleCreateAccount : null}
+                  style={{ cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.7 : 1 }}
                 >
                   <div className="screen3-thq-depth6-frame0-elm4">
                     <span className="screen3-thq-text-elm19">
-                      Create Account
+                      {isLoading ? "Creating..." : "Create Account"}
                     </span>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   updateProfile,
   user_profile_details,
+  getUserPublicProfile,
 } = require("../../../controllers/users");
 const { updateProfileSchema, updateAvailabilitySchema } = require("./schema");
 const validate = require("../../../middlewares/validate.middleware");
@@ -32,8 +33,8 @@ const upload = require("../../../middlewares/uploadMiddleware");
  */
 router.patch(
   "/update_profile",
-  validate(updateProfileSchema),
   upload.single("profile_pic"),
+  validate(updateProfileSchema),
   updateProfile
 );
 
@@ -54,5 +55,6 @@ router.patch(
  *               $ref: '#/components/schemas/GetUserProfileResponse'
  */
 router.get("/user_profile_details", user_profile_details);
+router.get("/profile/:userId", getUserPublicProfile);
 
 module.exports = router;

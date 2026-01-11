@@ -797,18 +797,49 @@
   flex-direction: column;
 }
 
-.screen7-thq-text-elm25 {
-  color: rgba(12, 20, 28, 1);
-  height: auto;
-  font-size: 16px;
-  align-self: stretch;
-  font-style: Regular;
-  text-align: left;
-  font-family: Inter;
-  font-weight: 400;
-  line-height: 24px;
-  font-stretch: normal;
-  text-decoration: none;
+.screen7-feedback-avatar {
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.screen7-username-clickable {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.screen7-username-clickable:hover {
+  color: #4a90e2;
+  text-decoration: underline;
+}
+
+.no-feedbacks {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
+  width: 100%;
+}
+
+.screen7-thq-depth5-frame-elm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+}
+
+.screen7-thq-depth6-frame0-elm {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.screen7-thq-depth6-frame1-elm {
+  margin-bottom: 4px;
+}
+
+.screen7-thq-depth6-frame2-elm {
+  margin-top: 4px;
 }
 
 .screen7-link {

@@ -1,6 +1,6 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-const { host } = require("../config/env");
+const { host, port } = require("../config/env");
 
 const convertJoiToSwagger = require("../utils/swaggerConverter");
 const {
@@ -155,7 +155,7 @@ const swaggerSpec = swaggerJSDoc(options);
 
 function swaggerDocs(app) {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log(`📘 Swagger Docs available at ${host}/api-docs`);
+  console.log(`📘 Swagger Docs available at ${host}:${port}/api-docs`);
 }
 
 module.exports = swaggerDocs;

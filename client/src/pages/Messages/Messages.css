@@ -27,6 +27,7 @@
 
 .screen18-thq-depth2-frame0-elm {
     display: flex;
+    width: 100%;
     padding: 12px 40px;
     align-self: stretch;
     align-items: center;
@@ -35,24 +36,6 @@
     border-style: solid;
     border-width: 0 0 1px;
     justify-content: space-between;
-}
-
-.screen18-thq-depth3-frame2-elm {
-    gap: 16px;
-    display: flex;
-    align-items: center;
-}
-
-.screen18-thq-depth5-frame0-elm10 {
-    width: 23px;
-    height: 16px;
-    align-self: stretch;
-}
-
-.screen18-thq-depth4-frame1-elm1 {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
 }
 
 .screen18-thq-text-elm10 {
@@ -105,18 +88,6 @@
     line-height: 21px;
     font-stretch: normal;
     text-decoration: none;
-}
-
-.screen18-thq-depth4-frame1-elm2 {
-    height: 40px;
-    display: flex;
-    padding: 0 16px;
-    overflow: hidden;
-    align-items: center;
-    flex-shrink: 0;
-    border-radius: 20px;
-    justify-content: center;
-    background-color: rgba(232, 237, 242, 1);
 }
 
 .screen18-thq-depth5-frame0-elm12 {

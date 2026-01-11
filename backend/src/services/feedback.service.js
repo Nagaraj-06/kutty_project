@@ -66,6 +66,7 @@ async function getFeedbacksForUser(user_id) {
         select: {
           id: true,
           email: true,
+          user_name: true,
           profile_pic_url: true,
         },
       },

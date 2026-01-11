@@ -4,9 +4,6 @@ const giveFeedbackRequestSchema = Joi.object({
   skill_swap_id: Joi.string()
     .required()
     .example("d3c4f7aa-2b42-4c89-b019-fbcceed48b06"),
-  given_by: Joi.string()
-    .required()
-    .example("510218c5-f81f-4697-be2d-4c89297c7b31"),
   user_skill_id: Joi.string()
     .required()
     .example("a24f92a5-1d33-47a2-a93a-88a8b40fd881"),
@@ -27,6 +24,7 @@ const giveFeedbackResponseSchema = Joi.object({
 const feedbackUserSchema = Joi.object({
   id: Joi.string().example("510218c5-f81f-4697-be2d-4c89297c7b31"),
   email: Joi.string().email().example("john@example.com"),
+  user_name: Joi.string().example("username"),
   profile_pic_url: Joi.string()
     .uri()
     .allow(null)

@@ -88,27 +88,6 @@ const SwapRequests = (props) => {
       </Helmet>
       <div className="screen17-thq-screen17-elm">
         <div className="screen17-thq-depth1-frame0-elm">
-          <div className="screen17-thq-depth2-frame0-elm">
-            <div className="screen17-thq-depth3-frame0-elm1">
-              <div className="screen17-thq-depth4-frame0-elm1">
-                <img
-                  src="/depth5frame22114-nnnv.svg"
-                  alt="Depth5Frame22114"
-                  className="screen17-thq-depth5-frame2-elm1"
-                />
-                <div className="screen17-thq-depth5-frame1-elm1">
-                  <span className="screen17-thq-text-elm10">
-                    Skill Swap Platform
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="screen17-thq-depth3-frame1-elm">
-              <div className="screen17-thq-depth4-frame0-elm2"></div>
-              <div className="screen17-thq-depth4-frame1-elm1" onClick={() => history.push("/profile")}
-                style={{ cursor: "pointer" }}></div>
-            </div>
-          </div>
           <div className="screen17-thq-depth2-frame1-elm">
             <div className="screen17-thq-depth3-frame0-elm2">
               <div className="screen17-thq-depth4-frame0-elm3">

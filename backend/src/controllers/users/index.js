@@ -9,7 +9,15 @@ async function updateProfile(req, res, next) {
   try {
     const user_id = req.user.id;
 
-    const { bio, profile_visibility, is_active, slots, skills } = req.body;
+    let { bio, profile_visibility, is_active, slots, skills } = req.body;
+
+    // Multer sends everything as strings for multipart/form-data
+    try {
+      if (typeof slots === "string") slots = JSON.parse(slots);
+      if (typeof skills === "string") skills = JSON.parse(skills);
+    } catch (e) {
+      console.error("Failed to parse slots or skills:", e);
+    }
 
     // handle profile pic upload
     let profile_pic_url = null;
@@ -71,7 +79,23 @@ async function user_profile_details(req, res, next) {
   }
 }
 
+async function getUserPublicProfile(req, res, next) {
+  try {
+    const { userId } = req.params;
+
+    const profileDetails = await getUserProfileDetails(userId);
+
+    res.json({
+      success: true,
+      data: profileDetails,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   user_profile_details,
   updateProfile,
+  getUserPublicProfile,
 };

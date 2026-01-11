@@ -16,7 +16,7 @@ async function startServer() {
   // Initialize Socket.IO
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "http://localhost:3000",
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -31,7 +31,7 @@ async function startServer() {
     debug: true,
     path: "/", // Changed from "/peerjs" to "/"
     cors: {
-      origin: "http://localhost:5173", // your frontend origin
+      origin: "http://localhost:3000", // your frontend origin
       methods: ["GET", "POST"],
     },
   });
@@ -42,8 +42,8 @@ async function startServer() {
   console.log("PeerJS server initialized at /peerjs");
 
   server.listen(port, () => {
-    console.log(`Server running on ${host}`);
-    console.log(`PeerJS available on port ${host} at path /peerjs`);
+    console.log(`Server running on ${host}:${port}`);
+    console.log(`PeerJS available on port ${host}:${port} at path /peerjs`);
   });
 }
 

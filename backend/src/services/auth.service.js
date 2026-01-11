@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt");
 const { nanoid } = require("nanoid");
 const sgMail = require("../config/sendgrid");
+const { frontendUrl } = require("../config/env");
 require("dotenv").config();
 
 // Signup service
@@ -47,7 +48,7 @@ async function signupUser({ user_name, email, password }) {
     });
 
     // Send verification email
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+    const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
 
     try {
       const msg = {
@@ -71,7 +72,7 @@ async function signupUser({ user_name, email, password }) {
     }
 
     // Success
-    return { message: "Verification email sent", email: user.email };
+    return { message: "Account created! Please check your email for verification (check your spam folder as well).", email: user.email };
   });
 }
 
