@@ -1,55 +1,98 @@
 const Joi = require("joi");
 
-// Update Profile
+/* ===========================
+   ENUM DEFINITIONS
+=========================== */
+
+const DAY_OF_WEEK = ["MON", "TUES", "WED", "THURS", "FRI", "SAT", "SUN"];
+const PROFILE_VISIBILITY = ["PUBLIC", "PRIVATE"];
+const SKILL_TYPE = ["WANTED", "OFFERING"];
+
+/* ===========================
+   UPDATE PROFILE REQUEST
+=========================== */
+
 const updateProfileSchema = Joi.object({
   bio: Joi.string().allow(null, "").optional(),
-  profile_visibility: "PUBLIC (Or) PRIVATE",
+
+  profile_visibility: Joi.string()
+    .valid(...PROFILE_VISIBILITY)
+    .optional(),
+
   is_active: Joi.boolean().optional(),
 
-  // ✅ Availability slots (array of objects)
+  // Availability slots
   slots: Joi.array()
     .items(
       Joi.object({
-        day_of_week:
-          "MON (Or) TUES (Or) WED (Or) THURS (Or) FRI (Or) SAT (Or) SUN",
+        day_of_week: Joi.string()
+          .valid(...DAY_OF_WEEK)
+          .required(),
+
         from_time: Joi.date().required(),
         to_time: Joi.date().required(),
+      }).custom((value, helpers) => {
+        if (new Date(value.from_time) >= new Date(value.to_time)) {
+          return helpers.message('"from_time" must be earlier than "to_time"');
+        }
+        return value;
       })
     )
     .optional(),
 
-  // ✅ Skills (array of objects)
+  // Skills
   skills: Joi.array()
     .items(
       Joi.object({
         skill_id: Joi.string().required(),
-        skill_type: "WANTED (Or) OFFERING",
+
+        skill_type: Joi.string()
+          .valid(...SKILL_TYPE)
+          .required(),
       })
     )
     .optional(),
 }).unknown(true);
+
+/* ===========================
+   UPDATE AVAILABILITY REQUEST
+=========================== */
+
+const updateAvailabilitySchema = Joi.array()
+  .items(
+    Joi.object({
+      day_of_week: Joi.string()
+        .valid(...DAY_OF_WEEK)
+        .required(),
+
+      from_time: Joi.string().isoDate().required(),
+      to_time: Joi.string().isoDate().required(),
+    }).custom((value, helpers) => {
+      if (new Date(value.from_time) >= new Date(value.to_time)) {
+        return helpers.message('"from_time" must be earlier than "to_time"');
+      }
+      return value;
+    })
+  )
+  .required();
+
+/* ===========================
+   RESPONSE SCHEMAS
+=========================== */
 
 const updateProfileResponseSchema = Joi.object({
   success: Joi.boolean().example(true),
   message: Joi.string().example("Profile updated successfully"),
 });
 
-// Update Availability
-const updateAvailabilitySchema = Joi.array()
-  .items(
-    Joi.object({
-      day_of_week:
-        "MON (Or) TUES (Or) WED (Or) THURS (Or) FRI (Or) SAT (Or) SUN",
-      from_time: Joi.string().isoDate().required(),
-      to_time: Joi.string().isoDate().required(),
-    })
-  )
-  .required();
-
 const updateUserAvailabilityResponseSchema = Joi.object({
   success: Joi.boolean().example(true),
   message: Joi.string().example("Availability updated successfully"),
 });
+
+/* ===========================
+   USER PROFILE RESPONSE
+=========================== */
 
 const userProfileResponseSchema = Joi.object({
   success: Joi.boolean().required(),
@@ -61,14 +104,19 @@ const userProfileResponseSchema = Joi.object({
       email: Joi.string().email().allow(null).optional(),
       bio: Joi.string().allow(null, "").optional(),
       profile_pic_url: Joi.string().allow(null, "").optional(),
-      profile_visibility: "PUBLIC (Or) PRIVATE",
+
+      profile_visibility: Joi.string()
+        .valid(...PROFILE_VISIBILITY)
+        .required(),
     }).required(),
 
     availability: Joi.array()
       .items(
         Joi.object({
-          day_of_week:
-            "MON (Or) TUES (Or) WED (Or) THURS (Or) FRI (Or) SAT (Or) SUN",
+          day_of_week: Joi.string()
+            .valid(...DAY_OF_WEEK)
+            .required(),
+
           from_time: Joi.date().required(),
           to_time: Joi.date().required(),
         })
@@ -79,13 +127,20 @@ const userProfileResponseSchema = Joi.object({
       .items(
         Joi.object({
           skill_id: Joi.string().required(),
-          skill_name: "Networking",
-          skill_type: "WANTED (Or) OFFERING",
+          skill_name: Joi.string().required(),
+
+          skill_type: Joi.string()
+            .valid(...SKILL_TYPE)
+            .required(),
         })
       )
       .optional(),
   }).required(),
 });
+
+/* ===========================
+   EXPORTS
+=========================== */
 
 module.exports = {
   updateProfileSchema,

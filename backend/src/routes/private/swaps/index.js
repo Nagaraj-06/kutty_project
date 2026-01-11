@@ -6,7 +6,7 @@ const {
   createSwapSchema,
   updateStatusSchema,
   swapResponseSchema,
-  markCompleteValidation,
+  markCompleteRequestSchema,
 } = require("./schema");
 
 /**
@@ -143,7 +143,7 @@ router.get(
 
 router.patch(
   "/mark_complete",
-  validate(markCompleteValidation),
+  validate(markCompleteRequestSchema),
   swapController.markSkillSwapComplete
 );
 

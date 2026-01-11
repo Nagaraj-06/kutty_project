@@ -1,10 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt");
 const { nanoid } = require("nanoid");
-const prisma = new PrismaClient();
 const sgMail = require("../config/sendgrid");
-require("dotenv").config(); // Load .env
+require("dotenv").config();
 
 // Signup service
 async function signupUser({ user_name, email, password }) {
@@ -49,16 +49,26 @@ async function signupUser({ user_name, email, password }) {
     // Send verification email
     const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
 
-    const msg = {
-      to: user.email,
-      from: process.env.FROM_EMAIL, // verified sender in SendGrid
-      subject: "Verify your Email",
-      text: "Email Verification",
-      html: `<p>Hello ${user.user_name},</p>
+    try {
+      const msg = {
+        to: user.email,
+        from: process.env.FROM_EMAIL, // verified sender in SendGrid
+        subject: "Verify your Email",
+        text: "Email Verification",
+        html: `<p>Hello ${user.user_name},</p>
          <p>Click <a href="${verificationLink}">here</a> to verify your email.</p>`,
-    };
+      };
 
-    await sgMail.send(msg);
+      await sgMail.send(msg);
+      console.log("✅ SendGrid API is working! Email sent successfully.");
+    } catch (error) {
+      console.error(
+        "❌ SendGrid test failed:",
+        error.response ? error.response.body : error
+      );
+
+      return { message: "SendGrid test failed" };
+    }
 
     // Success
     return { message: "Verification email sent", email: user.email };
@@ -100,7 +110,9 @@ async function verifyEmailService(token) {
   }
 
   if (tokenRecord.used) {
-    const err = new Error("This verification link has already been used - Go to login");
+    const err = new Error(
+      "This verification link has already been used - Go to login"
+    );
     err.statusCode = 400;
     throw err;
   }

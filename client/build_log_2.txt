@@ -1,0 +1,10 @@
+
+> client@1.0.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Failed to compile.
+
+Module not found: Error: Can't resolve '/* webpackIgnore: true */ "/tq_a8riknk3tv-obrs-200h.png"' in 'E:\Projects\Kutty-frontend\client\src\pages\Dashboard'
+
+

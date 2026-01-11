@@ -20,7 +20,9 @@ async function createSwapRequest(user_id, data) {
     where: { id: want_user_skill_id, user_id: user_id, is_active: true },
   });
 
-  // console.log(userOffer+" "+userWant);
+  console.log(data);
+
+  console.log(userOffer + " " + userWant);
 
   // 2️⃣ Fetch requested user's skills
   const targetOffer = await prisma.user_skills.findFirst({

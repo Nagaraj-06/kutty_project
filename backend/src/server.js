@@ -37,7 +37,7 @@ async function startServer() {
   });
 
   // Mount at /peerjs
-  app.use("/peerjs", peerServer);
+  // app.use("/peerjs", peerServer);
 
   console.log("PeerJS server initialized at /peerjs");
 

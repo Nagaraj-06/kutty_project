@@ -1,0 +1,197 @@
+.screen5-container1 {
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    flex-direction: column;
+}
+
+.screen5-thq-screen5-elm {
+    width: 100%;
+    height: auto;
+    display: flex;
+    overflow: hidden;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+    background-color: rgba(247, 249, 252, 1);
+}
+
+.screen5-thq-depth2-frame0-elm {
+    display: flex;
+    padding: 12px 40px;
+    align-self: stretch;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(229, 232, 234, 1);
+    border-style: solid;
+    border-width: 0 0 1px;
+    justify-content: space-between;
+}
+
+.screen5-thq-depth3-frame0-elm1 {
+    gap: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.screen5-thq-depth4-frame0-elm1 {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.screen5-thq-depth5-frame0-elm1 {
+    width: 16px;
+    height: 16px;
+    flex-grow: 1;
+}
+
+.screen5-thq-depth4-frame1-elm1 {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.screen5-thq-text-elm1 {
+    color: rgba(12, 20, 28, 1);
+    height: auto;
+    font-size: 18px;
+    font-style: Bold;
+    text-align: left;
+    font-family: Inter;
+    font-weight: 700;
+    line-height: 23px;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.screen5-thq-depth2-frame1-elm {
+    display: flex;
+    padding: 20px 160px;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-shrink: 0;
+    justify-content: center;
+}
+
+.screen5-thq-depth3-frame0-elm2 {
+    width: 960px;
+    display: flex;
+    overflow: hidden;
+    flex-grow: 1;
+    align-items: flex-start;
+    flex-shrink: 0;
+    flex-direction: column;
+}
+
+.screen5-thq-depth4-frame0-elm2 {
+    display: flex;
+    padding: 12px 16px;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.screen5-thq-depth5-frame0-elm2 {
+    height: 48px;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-shrink: 0;
+    flex-direction: column;
+}
+
+.screen5-thq-depth6-frame0-elm {
+    display: flex;
+    flex-grow: 1;
+    align-self: stretch;
+    align-items: flex-start;
+    border-radius: 8px;
+}
+
+.screen5-thq-depth7-frame0-elm {
+    display: flex;
+    padding: 0 0 0 16px;
+    align-self: stretch;
+    align-items: center;
+    border-radius: 8px 0 0 8px;
+    justify-content: center;
+    background-color: rgba(232, 237, 244, 1);
+}
+
+.screen5-thq-depth8-frame0-elm {
+    width: 24px;
+    height: 24px;
+    flex-grow: 1;
+}
+
+.screen5-thq-depth7-frame1-elm {
+    display: flex;
+    padding: 8px 16px 8px 8px;
+    overflow: hidden;
+    flex-grow: 1;
+    align-self: stretch;
+    align-items: center;
+    border-radius: 0 8px 8px 0;
+    background-color: rgba(232, 237, 244, 1);
+}
+
+.screen5-thq-text-elm2 {
+    color: rgba(73, 114, 155, 1);
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Inter;
+    font-weight: 400;
+    line-height: 24px;
+    font-stretch: normal;
+    text-decoration: none;
+}
+
+.screen5-thq-depth4-frame1-elm2 {
+    gap: 12px;
+    display: flex;
+    padding: 12px 16px 12px 12px;
+    flex-wrap: wrap;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.screen5-link {
+    display: contents;
+}
+
+.screen5-container2 {
+    right: 50px;
+    border: 1px solid #ffffff5c;
+    bottom: 30px;
+    display: flex;
+    z-index: 22;
+    position: fixed;
+    box-shadow: 5px 5px 10px 0px rgba(31, 31, 31, 0.4);
+    min-height: auto;
+    align-items: center;
+    padding-top: 8px;
+    padding-left: 12px;
+    border-radius: 8px;
+    padding-right: 12px;
+    padding-bottom: 8px;
+    backdrop-filter: blur(6px);
+    background-color: rgba(41, 41, 41, 0.41);
+}
+
+.screen5-icon1 {
+    width: 24px;
+    margin-right: 4px;
+}
+
+.screen5-text {
+    color: white;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
