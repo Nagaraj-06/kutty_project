@@ -132,6 +132,7 @@ async function getUserProfileDetails(user_id) {
   const skills = await prisma.user_skills.findMany({
     where: { user_id, is_active: true },
     select: {
+      id: true,
       skill_id: true,
       skill_type: true,
       status: true,
@@ -146,6 +147,7 @@ async function getUserProfileDetails(user_id) {
     user,
     availability,
     skills: skills.map((s) => ({
+      user_skill_id: s.id,
       skill_id: s.skill_id,
       skill_name: s.skill.name,
       skill_type: s.skill_type,

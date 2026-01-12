@@ -11,18 +11,6 @@ function setupSocket(io) {
       console.log(`User ${socket.id} joined room ${chatSessionId}`);
     });
 
-    // Join video room with peer ID (new functionality)
-    socket.on("join-room", (roomId, userId) => {
-      socket.join(roomId);
-      console.log(`✅ User ${userId} joined room ${roomId}`);
-
-      // Notify others in the room that a new user connected
-      socket.to(roomId).emit("user-connected", userId);
-
-      // Store the user's room and peer ID for disconnect handling
-      socket.data = { roomId, userId };
-    });
-
     // Send message in real-time (existing functionality)
     socket.on("send_message", async (data) => {
       try {
@@ -35,6 +23,19 @@ function setupSocket(io) {
         console.error("Error sending message:", err);
         socket.emit("error", { message: "Failed to send message" });
       }
+    });
+
+
+    // Join video room with peer ID (new functionality)
+    socket.on("join-room", (roomId, userId) => {
+      socket.join(roomId);
+      console.log(`✅ User ${userId} joined room ${roomId}`);
+
+      // Notify others in the room that a new user connected
+      socket.to(roomId).emit("user-connected", userId);
+
+      // Store the user's room and peer ID for disconnect handling
+      socket.data = { roomId, userId };
     });
 
     // General disconnect handler

@@ -40,41 +40,55 @@ const updateStatusSchema = Joi.object({
 /* ===========================
    SWAP RESPONSE (DETAIL)
 =========================== */
-
 const swapResponseSchema = Joi.object({
-  id: Joi.string().uuid().example("068f535f-585b-41e4-aa3f-570c7a3631c"),
+  id: Joi.string().uuid().required(),
+
+  message: Joi.string().allow(null, "").example("Hi Nagaraj..."),
 
   status: Joi.string()
     .valid(...SWAP_STATUS)
-    .example("PENDING"),
+    .required()
+    .example("ACCEPTED"),
+
+  // ✅ chat sessions array
+  chat_sessions: Joi.array().items(
+    Joi.object({
+      id: Joi.string().uuid().required(),
+      is_archived: Joi.boolean().required(),
+    })
+  ),
 
   requestFrom: Joi.object({
-    id: Joi.string().required().example("user123"),
-    email: Joi.string().email().required().example("from@example.com"),
+    id: Joi.string().required(),
+    email: Joi.string().email().required(),
+    user_name: Joi.string().required(),
+    profile_pic_url: Joi.string().allow(null, ""),
   }).required(),
 
   requestTo: Joi.object({
-    id: Joi.string().required().example("user456"),
-    email: Joi.string().email().required().example("to@example.com"),
+    id: Joi.string().required(),
+    email: Joi.string().email().required(),
+    user_name: Joi.string().required(),
+    profile_pic_url: Joi.string().allow(null, ""),
   }).required(),
 
   offerSkill: Joi.object({
     id: Joi.string().required(),
 
     user: Joi.object({
-      id: Joi.string().required().example("user123"),
-      email: Joi.string().email().required().example("user@example.com"),
-      name: Joi.string().required().example("user_name"),
+      id: Joi.string().required(),
+      email: Joi.string().email().required(),
+      user_name: Joi.string().required(),
+      profile_pic_url: Joi.string().allow(null, ""),
     }).required(),
 
     skill_type: Joi.string()
       .valid(...SKILL_TYPE)
-      .required()
-      .example("OFFERING"),
+      .required(),
 
     skill: Joi.object({
       id: Joi.string().required(),
-      name: Joi.string().required().example("skill_name"),
+      name: Joi.string().required(),
     }).required(),
   }).required(),
 
@@ -82,22 +96,23 @@ const swapResponseSchema = Joi.object({
     id: Joi.string().required(),
 
     user: Joi.object({
-      id: Joi.string().required().example("user456"),
-      email: Joi.string().email().required().example("user@example.com"),
-      name: Joi.string().required().example("user_name"),
+      id: Joi.string().required(),
+      email: Joi.string().email().required(),
+      user_name: Joi.string().required(),
+      profile_pic_url: Joi.string().allow(null, ""),
     }).required(),
 
     skill_type: Joi.string()
       .valid(...SKILL_TYPE)
-      .required()
-      .example("WANTED"),
+      .required(),
 
     skill: Joi.object({
       id: Joi.string().required(),
-      name: Joi.string().required().example("skill_name"),
+      name: Joi.string().required(),
     }).required(),
   }).required(),
 });
+
 
 /* ===========================
    CREATE SWAP RESPONSE

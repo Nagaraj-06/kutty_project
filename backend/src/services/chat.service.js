@@ -39,31 +39,44 @@ async function getMessagesBySession(chat_session_id) {
 }
 
 async function getChatListService(userId) {
-  // 1️⃣ Get accepted skill swaps where user is either request_from or request_to
+  // 1️⃣ Get ACCEPTED + COMPLETED skill swaps
   const skillSwaps = await prisma.skill_swaps.findMany({
     where: {
-      status: "ACCEPTED",
+      status: { in: ["ACCEPTED", "COMPLETED"] },
       OR: [{ request_from: userId }, { request_to: userId }],
     },
-    select: { id: true, request_from: true, request_to: true },
+    select: { id: true, request_from: true, request_to: true, status: true },
   });
 
   if (skillSwaps.length === 0) return [];
 
-  // 2️⃣ Extract all skill_swap_ids
+  // 2️⃣ Skill swap IDs
   const skillSwapIds = skillSwaps.map((s) => s.id);
 
-  // 3️⃣ Get chat sessions linked to those swaps
+  // 3️⃣ Chat sessions (handle archived logic)
   const chatSessions = await prisma.chat_sessions.findMany({
-    where: { skill_swap_id: { in: skillSwapIds } },
-    select: { id: true, skill_swap_id: true },
+    where: {
+      skill_swap_id: { in: skillSwapIds },
+      OR: [
+        { is_archived: false },
+        {
+          is_archived: true,
+          skill_swap: { status: "COMPLETED" },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      skill_swap_id: true,
+      is_archived: true,
+    },
   });
 
   if (chatSessions.length === 0) return [];
 
   const chatSessionIds = chatSessions.map((c) => c.id);
 
-  // 4️⃣ Get latest message for each chat_session
+  // 4️⃣ Get latest message time per chat
   const lastMessages = await prisma.chat_messages.groupBy({
     by: ["chat_session_id"],
     _max: { send_at: true },
@@ -74,7 +87,7 @@ async function getChatListService(userId) {
 
   for (const session of chatSessions) {
     const latestMsg = lastMessages.find(
-      (msg) => msg.chat_session_id === session.id
+      (m) => m.chat_session_id === session.id
     );
 
     let messageData = null;
@@ -88,31 +101,38 @@ async function getChatListService(userId) {
       });
     }
 
-    // 5️⃣ Get opposite user info
+    // 5️⃣ Find opposite user
     const swap = skillSwaps.find((s) => s.id === session.skill_swap_id);
     const oppositeUserId =
       swap.request_from === userId ? swap.request_to : swap.request_from;
 
     const oppositeUser = await prisma.users.findUnique({
       where: { id: oppositeUserId },
-      select: { user_name: true, email: true, profile_pic_url: true },
+      select: {
+        user_name: true,
+        email: true,
+        profile_pic_url: true,
+      },
     });
 
     chatListData.push({
       chat_session_id: session.id,
+      is_archived: session.is_archived,
       oppositeUser: {
         user_name: oppositeUser?.user_name,
         email: oppositeUser?.email,
         profile_pic_url: oppositeUser?.profile_pic_url,
         last_message: messageData?.message || "No messages yet",
         last_message_sent_by_me: messageData?.sender_id === userId,
-        updated_at: messageData?.send_at,
+        updated_at: messageData?.send_at || null,
       },
     });
   }
 
   // 6️⃣ Sort by latest message
-  chatListData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+  chatListData.sort(
+    (a, b) => new Date(b.oppositeUser.updated_at) - new Date(a.oppositeUser.updated_at)
+  );
 
   return chatListData;
 }

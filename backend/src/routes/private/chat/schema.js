@@ -25,19 +25,31 @@ const getChatResponseSchema = Joi.object({
 const getChatListResponseSchema = Joi.object({
   success: Joi.boolean().example(true),
   message: Joi.string().example("Chat list fetched successfully"),
-  data: Joi.array().example([
-    {
-      chat_session_id: "8fcddb71-2b42ecf-be2d-4c89-e7fc6d0de359",
-      oppositeUser: {
-        name: "John Doe",
-        email: "john@example.com",
-        profile_pic_url: "https://example.com/profile.jpg",
-      },
-      last_message: "Hello!",
-      last_message_sent_by_me: false,
-      updated_at: "2025-10-08T13:18:02.214Z",
-    },
-  ]),
+  data: Joi.array().items(
+    Joi.object({
+      chat_session_id: Joi.string()
+        .uuid()
+        .example("8fcddb71-2b42-ecfb-be2d-4c89e7fc6d0d"),
+
+      is_archived: Joi.boolean().example(false),
+
+      oppositeUser: Joi.object({
+        user_name: Joi.string().example("John Doe"),
+        email: Joi.string().email().example("john@example.com"),
+        profile_pic_url: Joi.string()
+          .uri()
+          .allow(null)
+          .example("https://example.com/profile.jpg"),
+
+        last_message: Joi.string().example("Hello!"),
+        last_message_sent_by_me: Joi.boolean().example(false),
+        updated_at: Joi.date()
+          .iso()
+          .allow(null)
+          .example("2025-10-08T13:18:02.214Z"),
+      }),
+    })
+  ),
 });
 
 module.exports = {

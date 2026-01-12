@@ -106,12 +106,33 @@ async function getUserRequests(user_id) {
     },
     select: {
       id: true,
+      message: true,
       status: true,
+
+      // include chat session (only one per swap)
+      chat_sessions: {
+        select: {
+          id: true,
+          is_archived: true,
+        },
+        take: 1,
+      },
+
       requestFrom: {
-        select: { id: true, email: true },
+        select: {
+          id: true,
+          email: true,
+          user_name: true,
+          profile_pic_url: true,
+        },
       },
       requestTo: {
-        select: { id: true, email: true },
+        select: {
+          id: true,
+          email: true,
+          user_name: true,
+          profile_pic_url: true,
+        },
       },
       offerSkill: {
         select: {
@@ -121,6 +142,7 @@ async function getUserRequests(user_id) {
               id: true,
               email: true,
               user_name: true,
+              profile_pic_url: true,
             },
           },
           skill_type: true,
@@ -140,6 +162,7 @@ async function getUserRequests(user_id) {
               id: true,
               email: true,
               user_name: true,
+              profile_pic_url: true,
             },
           },
           skill_type: true,

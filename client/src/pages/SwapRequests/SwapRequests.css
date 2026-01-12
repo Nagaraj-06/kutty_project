@@ -89,7 +89,6 @@
     flex-shrink: 0;
     border-radius: 20px;
     background-size: cover;
-    background-image: url("../../assets/images/tq_idyguueqml-5ee1-200h.png");
 }
 
 .screen17-thq-depth2-frame1-elm {
@@ -291,7 +290,6 @@
     flex-shrink: 0;
     border-radius: 35px;
     background-size: cover;
-    background-image: url("../../assets/images/tq_kmj4-n4cql-gg7p-200h.png");
 }
 
 .screen17-thq-depth6-frame1-elm2 {
@@ -1295,4 +1293,79 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+}
+
+/* Added Manual Classes */
+.swap-search-input {
+    background: transparent;
+    border: none;
+    width: 100%;
+    outline: none;
+}
+
+.swap-list-loading,
+.swap-list-empty {
+    width: 100%;
+    text-align: center;
+    padding: 30px;
+    color: #4c7299;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.italic-text {
+    font-style: italic;
+}
+
+.action-btn-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.status-dot-accepted {
+    background-color: #078738;
+}
+
+.status-dot-rejected {
+    background-color: #ff5c5c;
+}
+
+.status-dot-pending {
+    background-color: #ffd600;
+}
+
+.message-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+.message-text.message-expanded {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.read-more-link {
+    color: rgba(12, 127, 242, 1);
+    font-size: 14px;
+    font-family: Inter;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    display: none;
+}
+
+/* Show read more only if text overflows 2 lines */
+.screen17-thq-depth7-frame1-elm2:has(.message-text:not(.message-expanded)) .read-more-link {
+    display: inline-block;
+}
+
+.message-text.message-expanded+.read-more-link {
+    display: inline-block;
 }

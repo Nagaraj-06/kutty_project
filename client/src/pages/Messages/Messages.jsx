@@ -1,67 +1,38 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
+import { useGetChatListQuery } from '../../store/api/chatApi'
+import { getImageUrl } from '../../utils/imageUtils'
+import defaultProfilePic from '../../assets/images/default-profile-pic.png'
 import './Messages.css'
-
-import AlexImg from "../../assets/images/tq_uc4e4cdbzy-lvmj-200h.png"
-import OliviaImg from "../../assets/images/tq_lmsrdu5xwm-8gq9-200h.png"
-import NoahImg from "../../assets/images/tq_6tn6n4iht--vtkt-200h.png"
-import SophiaImg from "../../assets/images/tq_4qugh1dq25-gykp-200h.png"
-import LiamImg from "../../assets/images/tq_iam9e-lw4s-fx9-200h.png"
-import UserProfileImg from "../../assets/images/tq_axxqdx3cqk-n5oc-200h.png"
-import EthanCarterImg from "../../assets/images/tq_lp9_4etwck-4tnq-200h.png"
 
 const Messages = (props) => {
     const history = useHistory()
     const [searchQuery, setSearchQuery] = useState('')
+    const { data: chatListResponse, isLoading } = useGetChatListQuery()
 
     const navigate = (path) => {
         history.push(path)
     }
+    const [showArchived, setShowArchived] = useState(false)
 
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            name: 'Alex',
-            lastMessage: "I'm available for a session tomorrow.",
-            img: AlexImg,
-        },
-        {
-            id: 2,
-            name: 'Olivia',
-            lastMessage: "Let's schedule our next session.",
-            img: OliviaImg,
-        },
-        {
-            id: 3,
-            name: 'Ethan Carter',
-            lastMessage: "I've sent you the resources.",
-            img: EthanCarterImg,
-        },
-        {
-            id: 4,
-            name: 'Sophia',
-            lastMessage: 'Looking forward to our session!',
-            img: SophiaImg,
-        },
-        {
-            id: 5,
-            name: 'Liam',
-            lastMessage: "I'm available for a session tomorrow.",
-            img: LiamImg,
-        },
-    ])
+    const chats = chatListResponse?.data || []
 
-    const filteredMessages = messages.filter((msg) =>
-        msg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        msg.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+    const activeChats = chats.filter(c => !c.is_archived)
+    const archivedChats = chats.filter(c => c.is_archived)
+
+    const chatsToDisplay = showArchived ? archivedChats : activeChats
+
+    const filteredChats = chatsToDisplay.filter((chat) =>
+        chat.oppositeUser?.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        chat.oppositeUser?.last_message?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
     return (
         <div className="screen18-container1">
             <Helmet>
-                <title>ExploreMessages - Skill Swap</title>
-                <meta property="og:title" content="ExploreMessages - Skill Swap" />
+                <title>Messages - Skill Swap</title>
+                <meta property="og:title" content="Messages - Skill Swap" />
             </Helmet>
             <div className="screen18-thq-screen18-elm">
                 <div className="screen18-thq-depth1-frame0-elm">
@@ -100,41 +71,70 @@ const Messages = (props) => {
                                     </div>
                                 </div>
                             </div>
-                            {filteredMessages.map((msg) => (
-                                <div
-                                    key={msg.id}
-                                    className="screen18-thq-depth4-frame1-elm3"
-                                    onClick={() => navigate('/chat')}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    <div
-                                        className="screen18-thq-depth5-frame0-elm15"
-                                        style={{ backgroundImage: `url(${msg.img})` }}
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            navigate('/profile')
-                                        }}
-                                    ></div>
-                                    <div className="screen18-thq-depth5-frame1-elm1">
-                                        <div
-                                            className="screen18-thq-depth6-frame0-elm2"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                navigate('/profile')
-                                            }}
-                                        >
-                                            <span className="screen18-thq-text-elm15 screen18-username-clickable">
-                                                {msg.name}
-                                            </span>
-                                        </div>
-                                        <div className="screen18-thq-depth6-frame1-elm1">
-                                            <span className="screen18-thq-text-elm16">
-                                                {msg.lastMessage}
-                                            </span>
-                                        </div>
+
+                            {!showArchived && archivedChats.length > 0 && !searchQuery && (
+                                <div className="archived-row" onClick={() => setShowArchived(true)}>
+                                    <div className="archived-icon-container">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 5H4V19H20V5Z" stroke="#4C7299" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M10 12H14" stroke="#4C7299" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M1 5H23" stroke="#4C7299" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div className="archived-info">
+                                        <span className="archived-text">Archived</span>
+                                        <span className="archived-count">{archivedChats.length}</span>
                                     </div>
                                 </div>
-                            ))}
+                            )}
+
+                            {showArchived && (
+                                <div className="back-actions-row" onClick={() => setShowArchived(false)}>
+                                    <span>← Back to Messages</span>
+                                </div>
+                            )}
+                            {isLoading ? (
+                                <div style={{ padding: '20px', textAlign: 'center', color: '#4c7299' }}>Loading chats...</div>
+                            ) : filteredChats.length === 0 ? (
+                                <div style={{ padding: '20px', textAlign: 'center', color: '#4c7299' }}>No chats found.</div>
+                            ) : (
+                                filteredChats.map((chat) => (
+                                    <div
+                                        key={chat.chat_session_id}
+                                        className="screen18-thq-depth4-frame1-elm3"
+                                        onClick={() => navigate(`/messages/${chat.chat_session_id}`)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <div
+                                            className="screen18-thq-depth5-frame0-elm15"
+                                            style={{
+                                                backgroundImage: `url(${getImageUrl(chat.oppositeUser?.profile_pic_url, defaultProfilePic)})`,
+                                                backgroundSize: 'cover'
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                // navigate('/profile') // Assuming we might want to go to their profile later, but for now specific ID is tricky without user ID in chat object sometimes. 
+                                                // Actually the API response example doesn't explicitly show oppositeUserId, just oppositeUser object. 
+                                                // Assuming we stick to chat navigation for now.
+                                            }}
+                                        ></div>
+                                        <div className="screen18-thq-depth5-frame1-elm1">
+                                            <div
+                                                className="screen18-thq-depth6-frame0-elm2"
+                                            >
+                                                <span className="screen18-thq-text-elm15 screen18-username-clickable">
+                                                    {chat.oppositeUser?.user_name || "Unknown User"}
+                                                </span>
+                                            </div>
+                                            <div className="screen18-thq-depth6-frame1-elm1">
+                                                <span className="screen18-thq-text-elm16">
+                                                    {chat.oppositeUser?.last_message || "Start chatting..."}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

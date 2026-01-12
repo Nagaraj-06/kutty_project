@@ -86,7 +86,7 @@ const UserFeedbacks = (props) => {
                   </div>
                   <div
                     className="screen7-thq-depth6-frame1-elm1"
-                    onClick={() => navigate("/swap-request-form")}
+                    onClick={() => navigate(`/swap-request-form/${userId}`)}
                     style={{ cursor: "pointer" }}
                   >
                     <div className="screen7-thq-depth7-frame0-elm2">

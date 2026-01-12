@@ -1,8 +1,120 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
+import { useSelector } from 'react-redux'
+import { io } from 'socket.io-client'
+import { useGetChatMessagesQuery } from '../../store/api/chatApi'
+import { getImageUrl } from '../../utils/imageUtils'
+import defaultProfilePic from '../../assets/images/default-profile-pic.png'
 import './Chats.css'
 
+// Backend sockert server url
+const SOCKET_URL = 'http://localhost:8080'
+
 const Chats = (props) => {
+    const { chatId } = useParams()
+    const { user } = useSelector(state => state.auth)
+    const { data: messagesResponse, isLoading } = useGetChatMessagesQuery(chatId)
+    const [newMessage, setNewMessage] = useState("")
+    const [allMessages, setAllMessages] = useState([])
+    const messagesEndRef = useRef(null)
+    const socketRef = useRef(null)
+
+    // Sync RTK Query messages to local state when they load
+    useEffect(() => {
+        if (messagesResponse?.data) {
+            setAllMessages(messagesResponse.data)
+        }
+    }, [messagesResponse])
+
+    // Socket.IO Integration
+    useEffect(() => {
+        // Initialize Socket
+        socketRef.current = io(SOCKET_URL, {
+            transports: ['websocket'], // Use websocket only to avoid pooling issues
+            reconnectionAttempts: 5
+        })
+
+        // Join Chat Room
+        if (chatId) {
+            socketRef.current.emit('join', { chatSessionId: chatId })
+            console.log(`Joined room: ${chatId}`)
+        }
+
+        // Listen for new messages
+        socketRef.current.on('new_message', (message) => {
+            console.log("Received new message:", message)
+
+            // Append incoming message to state
+            // Ensure no duplicates if backend echoes back (which existing code said it broadcasts to others only, but good to be safe)
+            setAllMessages((prevMessages) => {
+                // Check if message ID already exists to prevent duplication
+                if (prevMessages.some(m => m.id === message.id)) {
+                    return prevMessages
+                }
+                return [...prevMessages, message]
+            })
+        })
+
+        socketRef.current.on('error', (err) => {
+            console.error("Socket error:", err)
+        })
+
+        // Cleanup on unmount
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect()
+            }
+        }
+    }, [chatId]) // Re-run if chatId changes
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [allMessages])
+
+    const handleSendMessage = () => {
+        if (!newMessage.trim() || !user || !chatId) return
+
+        const messagePayload = {
+            chat_session_id: chatId,
+            sender_id: user.id,
+            message: newMessage.trim()
+        }
+
+        // Optimistically update UI
+        // We create a temporary message object. Backend usually returns a real ID and timestamp.
+        // For now we assume success or fetch refreshed data later.
+        // Or better: Wait for socket "new_message" if backend echoed it. 
+        // BUT backend says: socket.broadcast.to(...).emit(...) -> Excludes sender.
+        // So we MUST add it locally.
+
+        const optimisticMessage = {
+            id: Date.now().toString(), // Temp ID
+            message: newMessage,
+            sender: {
+                id: user.id,
+                user_name: user.user_name || "You",
+                profile_pic_url: user.profile_pic_url
+            },
+            created_at: new Date().toISOString()
+        }
+
+        setAllMessages(prev => [...prev, optimisticMessage])
+        setNewMessage("")
+
+        // Emit to backend
+        if (socketRef.current) {
+            socketRef.current.emit('send_message', messagePayload)
+        }
+    }
+
+    // Infer other user from first message that isn't me, or default
+    const otherUser = allMessages.find(m => m.sender.id !== user?.id)?.sender || { user_name: "Chat", profile_pic_url: null }
+
     return (
         <div className="screen19-container1">
             <Helmet>
@@ -11,38 +123,18 @@ const Chats = (props) => {
             </Helmet>
             <div className="screen19-thq-screen19-elm">
                 <div className="screen19-thq-depth1-frame0-elm">
-                    <div className="screen19-thq-depth2-frame0-elm">
-                        <div className="screen19-thq-depth3-frame2-elm">
-                            <img
-                                src="/depth5frame02273-lytl.svg"
-                                alt="Depth5Frame02273"
-                                className="screen19-thq-depth5-frame0-elm1"
-                            />
-                            <div className="screen19-thq-depth4-frame1-elm1">
-                                <span className="screen19-thq-text-elm10">
-                                    Skill Swap Platform
-                                </span>
-                            </div>
-                        </div>
-                        <div className="screen19-thq-depth3-frame1-elm"></div>
-                    </div>
                     <div className="screen19-thq-depth2-frame1-elm">
                         <div className="screen19-thq-depth3-frame0-elm">
+                            {/* Sticky Header */}
                             <div className="screen19-thq-depth4-frame0-elm">
                                 <div className="screen19-thq-depth5-frame0-elm2">
-                                    <span className="screen19-thq-text-elm11">Sarah Miller</span>
+                                    <span className="screen19-thq-text-elm11">{otherUser.user_name}</span>
                                 </div>
-                            </div>
-                            <div className="screen19-thq-depth4-frame1-elm2">
                                 <div className="screen19-thq-depth5-frame0-elm3">
                                     <div className="screen19-thq-depth6-frame0-elm1">
                                         <div className="screen19-thq-depth7-frame0-elm1">
                                             <div className="screen19-thq-depth8-frame0-elm1">
-                                                <img
-                                                    src="/depth9frame02263-qg1d.svg"
-                                                    alt="Depth9Frame02263"
-                                                    className="screen19-thq-depth9-frame0-elm1"
-                                                />
+                                                <img src="/depth9frame02263-qg1d.svg" alt="Call" className="screen19-thq-depth9-frame0-elm1" />
                                             </div>
                                         </div>
                                         <div className="screen19-thq-depth7-frame1-elm1">
@@ -52,11 +144,7 @@ const Chats = (props) => {
                                     <div className="screen19-thq-depth6-frame1-elm1">
                                         <div className="screen19-thq-depth7-frame0-elm2">
                                             <div className="screen19-thq-depth8-frame0-elm2">
-                                                <img
-                                                    src="/depth9frame02264-msnw.svg"
-                                                    alt="Depth9Frame02264"
-                                                    className="screen19-thq-depth9-frame0-elm2"
-                                                />
+                                                <img src="/depth9frame02264-msnw.svg" alt="Video" className="screen19-thq-depth9-frame0-elm2" />
                                             </div>
                                         </div>
                                         <div className="screen19-thq-depth7-frame1-elm2">
@@ -66,11 +154,7 @@ const Chats = (props) => {
                                     <div className="screen19-thq-depth6-frame2-elm">
                                         <div className="screen19-thq-depth7-frame0-elm3">
                                             <div className="screen19-thq-depth8-frame0-elm3">
-                                                <img
-                                                    src="/depth9frame02265-fbiw.svg"
-                                                    alt="Depth9Frame02265"
-                                                    className="screen19-thq-depth9-frame0-elm3"
-                                                />
+                                                <img src="/depth9frame02265-fbiw.svg" alt="Schedule" className="screen19-thq-depth9-frame0-elm3" />
                                             </div>
                                         </div>
                                         <div className="screen19-thq-depth7-frame1-elm3">
@@ -79,112 +163,107 @@ const Chats = (props) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="screen19-thq-depth4-frame2-elm">
-                                <span className="screen19-thq-text-elm15">Today</span>
-                            </div>
-                            <div className="screen19-thq-depth4-frame3-elm">
-                                <div className="screen19-thq-depth5-frame0-elm4"></div>
-                                <div className="screen19-thq-depth5-frame1-elm1">
-                                    <div className="screen19-thq-depth6-frame0-elm2">
-                                        <span className="screen19-thq-text-elm16">
-                                            Sarah Miller
-                                        </span>
-                                    </div>
-                                    <div className="screen19-thq-depth6-frame1-elm2">
-                                        <span className="screen19-thq-text-elm17">
-                                            <span>
-                                                Hi Alex, I&apos;m excited to start our skillswap!
-                                            </span>
-                                            <br></br>
-                                            <span>I&apos;m available to meet next week.</span>
-                                            <br></br>
-                                            <span>What days work best for you?</span>
-                                        </span>
-                                    </div>
+
+                            {/* Scrollable Message Area Wrapper */}
+                            <div className="chat-messages-scroll-area">
+                                <div className="screen19-thq-depth4-frame1-elm2"></div>
+                                <div className="screen19-thq-depth4-frame2-elm">
+                                    <span className="screen19-thq-text-elm15">Today</span>
                                 </div>
-                            </div>
-                            <div className="screen19-thq-depth4-frame4-elm">
-                                <div className="screen19-thq-depth5-frame0-elm5">
-                                    <div className="screen19-thq-depth6-frame0-elm3">
-                                        <span className="screen19-thq-text-elm21">
-                                            Alex Johnson
-                                        </span>
-                                    </div>
-                                    <div className="screen19-thq-depth6-frame1-elm3">
-                                        <span className="screen19-thq-text-elm22">
-                                            <span>
-                                                Hi Sarah, I&apos;m excited too! I&apos;m free on
-                                                <span
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: ' ',
-                                                    }}
-                                                />
-                                            </span>
-                                            <br></br>
-                                            <span>Tuesday and Thursday evenings. Let me</span>
-                                            <br></br>
-                                            <span>know if either of those work for you.</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="screen19-thq-depth5-frame1-elm2"></div>
-                            </div>
-                            <div className="screen19-thq-depth4-frame5-elm">
-                                <div className="screen19-thq-depth5-frame0-elm6"></div>
-                                <div className="screen19-thq-depth5-frame1-elm3">
-                                    <div className="screen19-thq-depth6-frame0-elm4">
-                                        <span className="screen19-thq-text-elm26">
-                                            Sarah Miller
-                                        </span>
-                                    </div>
-                                    <div className="screen19-thq-depth6-frame1-elm4">
-                                        <span className="screen19-thq-text-elm27">
-                                            <span>Thursday evening works great for me!</span>
-                                            <br></br>
-                                            <span>How about 7 PM?</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="screen19-thq-depth4-frame6-elm">
-                                <div className="screen19-thq-depth5-frame0-elm7">
-                                    <div className="screen19-thq-depth6-frame0-elm5">
-                                        <span className="screen19-thq-text-elm30">
-                                            Alex Johnson
-                                        </span>
-                                    </div>
-                                    <div className="screen19-thq-depth6-frame1-elm5">
-                                        <span className="screen19-thq-text-elm31">
-                                            <span>Perfect! 7 PM on Thursday it is.</span>
-                                            <br></br>
-                                            <span>Looking forward to it!</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="screen19-thq-depth5-frame1-elm4"></div>
-                            </div>
-                            <div className="screen19-thq-depth4-frame7-elm"></div>
-                            <div className="screen19-thq-depth4-frame10-elm">
-                                <div className="screen19-thq-depth5-frame0-elm8">
-                                    <div className="screen19-thq-depth6-frame0-elm6">
-                                        <div className="screen19-thq-depth7-frame0-elm4">
-                                            <span className="screen19-thq-text-elm34">
-                                                Write a message...
-                                            </span>
-                                        </div>
-                                        <div className="screen19-thq-depth7-frame1-elm4">
-                                            <div className="screen19-thq-depth8-frame0-elm4">
-                                                <div className="screen19-thq-depth9-frame0-elm4">
-                                                    <div className="screen19-thq-depth10-frame0-elm1">
-                                                        <div className="screen19-thq-depth11-frame0-elm">
-                                                            <img
-                                                                src="/depth12frame02271-05j.svg"
-                                                                alt="Depth12Frame02271"
-                                                                className="screen19-thq-depth12-frame0-elm"
-                                                            />
+
+                                {/* Messages List */}
+                                {isLoading && allMessages.length === 0 ? (
+                                    <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+                                ) : (
+                                    allMessages.map((msg, index) => {
+                                        // Handle both standard ID and temp ID
+                                        const key = msg.id || index
+                                        const isMe = msg.sender.id === user?.id
+
+                                        if (!isMe) {
+                                            // Received Message Structure
+                                            return (
+                                                <div key={key} className="screen19-thq-depth4-frame3-elm">
+                                                    <div
+                                                        className="screen19-thq-depth5-frame0-elm4"
+                                                        style={{
+                                                            backgroundImage: `url(${getImageUrl(msg.sender.profile_pic_url, defaultProfilePic)})`
+                                                        }}
+                                                    ></div>
+                                                    <div className="screen19-thq-depth5-frame1-elm1">
+                                                        <div className="screen19-thq-depth6-frame0-elm2">
+                                                            <span className="screen19-thq-text-elm16">
+                                                                {msg.sender.user_name}
+                                                            </span>
+                                                        </div>
+                                                        <div className="screen19-thq-depth6-frame1-elm2" style={{ height: 'auto', minHeight: 'fit-content' }}>
+                                                            <span className="screen19-thq-text-elm17">
+                                                                {msg.message}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            )
+                                        } else {
+                                            // Sent Message Structure
+                                            return (
+                                                <div key={key} className="screen19-thq-depth4-frame4-elm">
+                                                    <div className="screen19-thq-depth5-frame0-elm5">
+                                                        <div className="screen19-thq-depth6-frame0-elm3">
+                                                            <span className="screen19-thq-text-elm21">
+                                                                You
+                                                            </span>
+                                                        </div>
+                                                        <div className="screen19-thq-depth6-frame1-elm3" style={{ height: 'auto', minHeight: 'fit-content' }}>
+                                                            <span className="screen19-thq-text-elm22">
+                                                                {msg.message}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className="screen19-thq-depth5-frame1-elm2"
+                                                        style={{
+                                                            backgroundImage: `url(${getImageUrl(user?.profile_pic_url, defaultProfilePic)})`
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            )
+                                        }
+                                    })
+                                )}
+
+                                <div className="screen19-thq-depth4-frame7-elm"></div>
+                                <div ref={messagesEndRef} />
+                            </div>
+
+                            {/* Sticky Footer */}
+                            <div className="screen19-thq-depth4-frame10-elm">
+                                <div className="screen19-thq-depth5-frame0-elm8">
+                                    <div className="screen19-thq-depth6-frame0-elm6">
+                                        <div className="screen19-thq-depth7-frame0-elm4" style={{ flexGrow: 1 }}>
+                                            <input
+                                                type="text"
+                                                className="screen19-thq-text-elm34"
+                                                placeholder="Write a message..."
+                                                value={newMessage}
+                                                onChange={(e) => setNewMessage(e.target.value)}
+                                                style={{
+                                                    width: '100%',
+                                                    border: 'none',
+                                                    background: 'transparent',
+                                                    outline: 'none'
+                                                }}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        handleSendMessage()
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="screen19-thq-depth7-frame1-elm4" style={{ cursor: 'pointer' }}
+                                            onClick={handleSendMessage}
+                                        >
+                                            <div className="screen19-thq-depth8-frame0-elm4">
                                                 <div className="screen19-thq-depth9-frame1-elm">
                                                     <div className="screen19-thq-depth10-frame0-elm2">
                                                         <span className="screen19-thq-text-elm35">

@@ -34,11 +34,11 @@ const App = () => {
                 <Route component={SignIn} exact path="/signin" />
                 <Route component={UserProfile} exact path="/profile" />
                 <Route component={UserFeedbacks} exact path="/feedbacks/:userId" />
-                <Route component={SwapRequestForm} exact path="/swap-request-form" />
+                <Route component={SwapRequestForm} exact path="/swap-request-form/:userId" />
                 <Route component={Dashboard} exact path="/dashboard" />
                 <Route component={SwapRequests} exact path="/swap-requests" />
                 <Route component={Messages} exact path="/messages" />
-                <Route component={Chats} exact path="/chats" />
+                <Route component={Chats} exact path="/messages/:chatId" />
                 <Route component={SearchBar} exact path="/search" />
                 <Route component={ResetPassword} exact path="/reset-password/:token" />
                 <Route component={VerifyEmail} exact path="/verify-email" />

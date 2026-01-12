@@ -143,7 +143,7 @@ router.get(
 
 router.patch(
   "/mark_complete",
-  validate(markCompleteRequestSchema),
+  validate(markCompleteRequestSchema, "query"),
   swapController.markSkillSwapComplete
 );
 
