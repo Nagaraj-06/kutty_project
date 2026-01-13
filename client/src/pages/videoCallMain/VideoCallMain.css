@@ -1,0 +1,394 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.video-call-main-container {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #101922;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+
+/* Glass Panel Effect */
+.glass-panel {
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Header Overlay */
+.video-call-header {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    right: 2rem;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.recording-badge {
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+}
+
+.recording-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: #ef4444;
+    border-radius: 50%;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.recording-time {
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: white;
+}
+
+.connection-badge {
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+}
+
+.connection-badge .material-icons {
+    font-size: 0.875rem;
+    color: white;
+}
+
+.connection-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.settings-button {
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.settings-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.settings-button .material-icons {
+    color: white;
+    font-size: 1.5rem;
+}
+
+.user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid rgba(19, 127, 236, 0.5);
+    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuATkCo2OX_E4xcOWN92gFMDwjotCW_nMbQRPcExhiAHc87c16Y4K6NWGj00TJrQJe6j4UNaAv8X1qjhQrz50Dv3sf02F1qNCIIJCpoxUVH6Qy7JBJIxPOIOACj8FHVXjebM79frAsJYLZyihbtC_208WA8ySd5MThI3vo0Pk5GR9CJFov4Kp6uRlJrJolI2g9UtmJyP6J8l3rVdNYyKq1OkRIjACK2n8xTWhw4zOywhSRYdTaufx30bZe4Su0R0ak3hYQGkrfVKmCM');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Remote Video Container */
+.remote-video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 1440px;
+    max-height: 810px;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    background-color: black;
+}
+
+.remote-video-feed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #000;
+}
+
+.remote-user-badge {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 10;
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.remote-user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.remote-user-label {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+/* Local Video PiP */
+.local-video-pip {
+    position: absolute;
+    bottom: 2.5rem;
+    right: 2.5rem;
+    z-index: 30;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background-color: #101922;
+}
+
+.local-video-feed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #222;
+    transform: scaleX(-1);
+    /* Mirror effect for local video */
+}
+
+.local-video-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+}
+
+.local-video-label {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.you-label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.speak-indicator {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+}
+
+.speak-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #137fec;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #137fec;
+}
+
+/* Control Toolbar */
+.control-toolbar {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+}
+
+.toolbar-panel {
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.control-button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+
+.control-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.control-button.active {
+    background-color: #137fec;
+}
+
+.control-button.active:hover {
+    background-color: rgba(19, 127, 236, 0.8);
+}
+
+.control-button .material-icons {
+    font-size: 1.5rem;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 0 0.25rem;
+}
+
+.control-button-wrapper {
+    position: relative;
+}
+
+.notification-dot {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 0.625rem;
+    height: 0.625rem;
+    background-color: #137fec;
+    border-radius: 50%;
+    border: 2px solid #101922;
+}
+
+.end-call-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1.5rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    background-color: #ef4444;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: none;
+}
+
+.end-call-button:hover {
+    background-color: #dc2626;
+}
+
+.end-call-button .material-icons {
+    font-size: 1.5rem;
+}
+
+.end-call-text {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .end-call-text {
+        display: inline;
+    }
+
+    .local-video-pip {
+        width: 14rem;
+        height: 14rem;
+    }
+}
+
+/* Reaction Buttons */
+.reaction-buttons {
+    position: absolute;
+    top: 6rem;
+    right: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 20;
+}
+
+.reaction-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(16, 25, 34, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+    border: none;
+}
+
+.reaction-button:hover {
+    transform: scale(1.1);
+}

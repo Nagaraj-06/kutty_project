@@ -11,10 +11,6 @@ export const chatApi = baseApi.injectEndpoints({
             query: (chatSessionId) => `/private/api/chat/get_chat?chat_session_id=${chatSessionId}`,
             providesTags: (result, error, id) => [{ type: 'ChatMessages', id }],
         }),
-        // Assuming a send message endpoint existed or user would want one, 
-        // but sticking to requested GETs for now unless implicit. 
-        // I will add a placeholder for sendMessage if I find the route in backend, 
-        // otherwise just the GETs as requested.
     }),
 });
 

@@ -4,6 +4,7 @@ client/dist
 
 # build output
 client/build
+client/.env
 
 # logs / temp files
 client/build_log.txt

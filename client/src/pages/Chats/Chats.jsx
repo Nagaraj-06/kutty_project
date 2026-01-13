@@ -100,6 +100,7 @@ const Chats = (props) => {
                 user_name: user.user_name || "You",
                 profile_pic_url: user.profile_pic_url
             },
+            send_at: new Date().toISOString(),
             created_at: new Date().toISOString()
         }
 
@@ -166,69 +167,98 @@ const Chats = (props) => {
 
                             {/* Scrollable Message Area Wrapper */}
                             <div className="chat-messages-scroll-area">
-                                <div className="screen19-thq-depth4-frame1-elm2"></div>
-                                <div className="screen19-thq-depth4-frame2-elm">
-                                    <span className="screen19-thq-text-elm15">Today</span>
-                                </div>
 
                                 {/* Messages List */}
                                 {isLoading && allMessages.length === 0 ? (
                                     <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
                                 ) : (
                                     allMessages.map((msg, index) => {
-                                        // Handle both standard ID and temp ID
                                         const key = msg.id || index
                                         const isMe = msg.sender.id === user?.id
 
-                                        if (!isMe) {
-                                            // Received Message Structure
-                                            return (
-                                                <div key={key} className="screen19-thq-depth4-frame3-elm">
-                                                    <div
-                                                        className="screen19-thq-depth5-frame0-elm4"
-                                                        style={{
-                                                            backgroundImage: `url(${getImageUrl(msg.sender.profile_pic_url, defaultProfilePic)})`
-                                                        }}
-                                                    ></div>
-                                                    <div className="screen19-thq-depth5-frame1-elm1">
-                                                        <div className="screen19-thq-depth6-frame0-elm2">
-                                                            <span className="screen19-thq-text-elm16">
-                                                                {msg.sender.user_name}
-                                                            </span>
-                                                        </div>
-                                                        <div className="screen19-thq-depth6-frame1-elm2" style={{ height: 'auto', minHeight: 'fit-content' }}>
-                                                            <span className="screen19-thq-text-elm17">
-                                                                {msg.message}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
+                                        // Date Logic
+                                        const messageDate = new Date(msg.send_at || msg.created_at || Date.now())
+                                        const dateString = messageDate.toDateString()
+
+                                        let showDateHeader = false
+                                        if (index === 0) {
+                                            showDateHeader = true
                                         } else {
-                                            // Sent Message Structure
-                                            return (
-                                                <div key={key} className="screen19-thq-depth4-frame4-elm">
-                                                    <div className="screen19-thq-depth5-frame0-elm5">
-                                                        <div className="screen19-thq-depth6-frame0-elm3">
-                                                            <span className="screen19-thq-text-elm21">
-                                                                You
-                                                            </span>
-                                                        </div>
-                                                        <div className="screen19-thq-depth6-frame1-elm3" style={{ height: 'auto', minHeight: 'fit-content' }}>
-                                                            <span className="screen19-thq-text-elm22">
-                                                                {msg.message}
-                                                            </span>
+                                            const prevMsg = allMessages[index - 1]
+                                            const prevDate = new Date(prevMsg.send_at || prevMsg.created_at || Date.now())
+                                            if (prevDate.toDateString() !== dateString) {
+                                                showDateHeader = true
+                                            }
+                                        }
+
+                                        // Format Date Label
+                                        let dateLabel = dateString
+                                        const today = new Date()
+                                        const yesterday = new Date()
+                                        yesterday.setDate(yesterday.getDate() - 1)
+
+                                        if (dateString === today.toDateString()) {
+                                            dateLabel = "Today"
+                                        } else if (dateString === yesterday.toDateString()) {
+                                            dateLabel = "Yesterday"
+                                        } else {
+                                            dateLabel = messageDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+                                        }
+
+                                        return (
+                                            <React.Fragment key={key}>
+                                                {showDateHeader && (
+                                                    <div className="screen19-thq-depth4-frame2-elm">
+                                                        <span className="screen19-thq-text-elm15">{dateLabel}</span>
+                                                    </div>
+                                                )}
+
+                                                {/* Message Bubble */}
+                                                {!isMe ? (
+                                                    <div className="screen19-thq-depth4-frame3-elm">
+                                                        <div
+                                                            className="screen19-thq-depth5-frame0-elm4"
+                                                            style={{
+                                                                backgroundImage: `url(${getImageUrl(msg.sender.profile_pic_url, defaultProfilePic)})`
+                                                            }}
+                                                        ></div>
+                                                        <div className="screen19-thq-depth5-frame1-elm1">
+                                                            <div className="screen19-thq-depth6-frame0-elm2">
+                                                                <span className="screen19-thq-text-elm16">
+                                                                    {msg.sender.user_name}
+                                                                </span>
+                                                            </div>
+                                                            <div className="screen19-thq-depth6-frame1-elm2" style={{ height: 'auto', minHeight: 'fit-content' }}>
+                                                                <span className="screen19-thq-text-elm17">
+                                                                    {msg.message}
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div
-                                                        className="screen19-thq-depth5-frame1-elm2"
-                                                        style={{
-                                                            backgroundImage: `url(${getImageUrl(user?.profile_pic_url, defaultProfilePic)})`
-                                                        }}
-                                                    ></div>
-                                                </div>
-                                            )
-                                        }
+                                                ) : (
+                                                    <div className="screen19-thq-depth4-frame4-elm">
+                                                        <div className="screen19-thq-depth5-frame0-elm5">
+                                                            <div className="screen19-thq-depth6-frame0-elm3">
+                                                                <span className="screen19-thq-text-elm21">
+                                                                    You
+                                                                </span>
+                                                            </div>
+                                                            <div className="screen19-thq-depth6-frame1-elm3" style={{ height: 'auto', minHeight: 'fit-content' }}>
+                                                                <span className="screen19-thq-text-elm22">
+                                                                    {msg.message}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className="screen19-thq-depth5-frame1-elm2"
+                                                            style={{
+                                                                backgroundImage: `url(${getImageUrl(user?.profile_pic_url, defaultProfilePic)})`
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                )}
+                                            </React.Fragment>
+                                        )
                                     })
                                 )}
 

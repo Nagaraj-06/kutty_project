@@ -23,6 +23,8 @@ import VerifyEmail from './pages/VerifyEmail/VerifyEmail'
 import ForgetPassword from './pages/ForgetPassword/ForgetPassword'
 import NotFound from './pages/NotFound/NotFound'
 import Header from './components/Header/Header'
+import VideoCallMinimalist from './pages/VideoCallMinimalist/VideoCallMinimalist'
+import VideoCallMain from './pages/videoCallMain/VideoCallMain'
 
 const App = () => {
     return (
@@ -43,6 +45,8 @@ const App = () => {
                 <Route component={ResetPassword} exact path="/reset-password/:token" />
                 <Route component={VerifyEmail} exact path="/verify-email" />
                 <Route component={ForgetPassword} exact path="/forgot-password" />
+                <Route component={VideoCallMinimalist} exact path="/video-call-minimalist" />
+                <Route component={VideoCallMain} exact path="/video-call-main" />
                 <Route component={NotFound} path="**" />
                 <Redirect to="**" />
             </Switch>
