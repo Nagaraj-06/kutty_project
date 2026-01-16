@@ -30,26 +30,29 @@ const App = () => {
     return (
         <Router>
             <Header />
-            <Switch>
-                <Route component={SkillConnect} exact path="/explore" />
-                <Route component={Login} exact path="/login" />
-                <Route component={SignIn} exact path="/signin" />
-                <Route component={UserProfile} exact path="/profile" />
-                <Route component={UserFeedbacks} exact path="/feedbacks/:userId" />
-                <Route component={SwapRequestForm} exact path="/swap-request-form/:userId" />
-                <Route component={Dashboard} exact path="/dashboard" />
-                <Route component={SwapRequests} exact path="/swap-requests" />
-                <Route component={Messages} exact path="/messages" />
-                <Route component={Chats} exact path="/messages/:chatId" />
-                <Route component={SearchBar} exact path="/search" />
-                <Route component={ResetPassword} exact path="/reset-password/:token" />
-                <Route component={VerifyEmail} exact path="/verify-email" />
-                <Route component={ForgetPassword} exact path="/forgot-password" />
-                <Route component={VideoCallMinimalist} exact path="/video-call-minimalist" />
-                <Route component={VideoCallMain} exact path="/video-call-main" />
-                <Route component={NotFound} path="**" />
-                <Redirect to="**" />
-            </Switch>
+            <div className="app-content">
+                <Switch>
+                    <Route component={SkillConnect} exact path="/explore" />
+                    <Route component={Login} exact path="/login" />
+                    <Route component={SignIn} exact path="/signin" />
+                    <Route component={UserProfile} exact path="/profile" />
+                    <Route component={UserProfile} exact path="/profile/:userId" />
+                    <Route component={UserFeedbacks} exact path="/feedbacks/:userId" />
+                    <Route component={SwapRequestForm} exact path="/swap-request-form/:userId" />
+                    <Route component={Dashboard} exact path="/dashboard" />
+                    <Route component={SwapRequests} exact path="/swap-requests" />
+                    <Route component={Messages} exact path="/messages" />
+                    <Route component={Chats} exact path="/messages/:chatId" />
+                    <Route component={SearchBar} exact path="/search" />
+                    <Route component={ResetPassword} exact path="/reset-password/:token" />
+                    <Route component={VerifyEmail} exact path="/verify-email" />
+                    <Route component={ForgetPassword} exact path="/forgot-password" />
+                    <Route component={VideoCallMinimalist} exact path="/video-call-minimalist" />
+                    <Route component={VideoCallMain} exact path="/video-call-main" />
+                    <Route component={NotFound} path="**" />
+                    <Redirect to="**" />
+                </Switch>
+            </div>
         </Router>
     )
 }

@@ -1,27 +1,14 @@
 .screen7-container1 {
+  height: 100%;
   width: 100%;
   display: flex;
   overflow: auto;
-  min-height: 100vh;
   align-items: center;
-  flex-direction: column;
-}
-
-.screen7-thq-screen7-elm {
-  width: 100%;
-  height: auto;
   display: flex;
-  overflow: hidden;
-  align-self: stretch;
-  align-items: flex-start;
-  flex-direction: column;
-  background-color: rgba(247, 249, 252, 1);
-}
-
-.screen7-thq-depth1-frame0-elm {
-  display: flex;
-  align-self: stretch;
-  align-items: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-grow: 1;
+  flex-shrink: 0;
   flex-direction: column;
 }
 
@@ -94,16 +81,7 @@
   background-image: url("../../assets/images/tq_l-ikrmqsok-nipq-200h.png");
 }
 
-.screen7-thq-depth2-frame1-elm {
-  display: flex;
-  padding: 20px 160px;
-  flex-grow: 1;
-  align-self: stretch;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.screen7-thq-depth3-frame0-elm2 {
+.user-feedback-wrapper {
   width: 960px;
   display: flex;
   overflow: hidden;
@@ -821,7 +799,7 @@
   width: 100%;
 }
 
-.screen7-thq-depth5-frame-elm {
+.feedback-item {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -887,4 +865,9 @@
 
 .screen7-username-clickable:hover {
   text-decoration: underline;
+  color: black;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

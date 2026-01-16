@@ -58,87 +58,88 @@ const SkillConnect = () => {
   if (isError) return <div className="loading">Failed to load users. Please try again later.</div>;
 
   return (
-    <div className="screen1-container1">
+    <div className="screen1-container1"> {/* Main SkillConnect page container */}
       <Helmet>
         <title>SkillConnect - Skill Swap</title>
         <meta property="og:title" content="SkillConnect - Skill Swap" />
       </Helmet>
-      <div className="screen1-thq-screen1-elm">
-        <div className="screen1-thq-depth2-frame1-elm">
-          <div className="screen1-thq-depth3-frame0-elm2">
-            <div className="screen1-thq-depth4-frame0-elm3">
-              <div className="screen1-thq-depth5-frame0-elm1">
-                <div className="screen1-thq-depth6-frame0-elm1">
-                  <div className="screen1-thq-depth7-frame0-elm10">
-                    <img
-                      src="/depth8frame0626-uapf.svg"
-                      alt="Search"
-                      className="screen1-thq-depth8-frame0-elm10"
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    className="screen1-search-input"
-                    placeholder="Search by name or skill"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+
+      <div className="skillconnect-wrapper">
+        {/* Search bar container */}
+        <div className="search-container">
+          <div className="screen1-thq-depth5-frame0-elm1">
+            <div className="screen1-thq-depth6-frame0-elm1">
+              <div className="screen1-thq-depth7-frame0-elm10">
+                <img
+                  src="/depth8frame0626-uapf.svg"
+                  alt="Search"
+                  className="screen1-thq-depth8-frame0-elm10"
+                />
               </div>
+              <input
+                type="text"
+                className="screen1-search-input"
+                placeholder="Search by name or skill"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <div className="screen1-thq-depth4-frame1-elm2">
-              <div className="screen1-thq-depth5-frame0-elm2">
-                <select
-                  className="screen1-availability-select"
-                  value={availabilityFilter}
-                  onChange={(e) => setAvailabilityFilter(e.target.value)}
+          </div>
+        </div>
+
+        {/* Availability filter dropdown */}
+        <div className="availability-filter">
+          <select
+            className="availability-select"
+            value={availabilityFilter}
+            onChange={(e) => setAvailabilityFilter(e.target.value)}
+          >
+            <option value="All">Availability</option>
+            <option value="Available">Available</option>
+            <option value="Busy">Busy</option>
+          </select>
+        </div>
+
+        {/* Users list container */}
+        <div className="users-list">
+          <div className="screen1-thq-depth5-frame0-elm3">
+            {currentUsers.length > 0 ? (
+              currentUsers.map((user, index) => (
+                <div
+                  key={user.id}
+                  /* User card */
+                  className={`screen1-thq-depth6-frame${index % 6}-elm`}
+                  onClick={() => navigate(`/feedbacks/${user.id}`)}
+                  style={{ cursor: "pointer" }}
                 >
-                  <option value="All">Availability</option>
-                  <option value="Available">Available</option>
-                  <option value="Busy">Busy</option>
-                </select>
-              </div>
-            </div>
-            <div className="screen1-thq-depth4-frame2-elm">
-              <div className="screen1-thq-depth5-frame0-elm3">
-                {currentUsers.length > 0 ? (
-                  currentUsers.map((user, index) => (
+                  <div className="screen1-thq-depth7-frame0-elm12">
                     <div
-                      key={user.id}
-                      className={`screen1-thq-depth6-frame${index % 6}-elm`}
-                      onClick={() => navigate(`/feedbacks/${user.id}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div className="screen1-thq-depth7-frame0-elm12">
-                        <div
-                          className="screen1-thq-depth8-frame0-elm11"
-                          style={{
-                            backgroundImage: `url(${user.image})`,
-                            backgroundPosition: "center",
-                            backgroundSize: "110%",
-                            backgroundRepeat: "no-repeat",
-                          }}
-                        ></div>
-                      </div>
-                      <div className="screen1-thq-depth7-frame1-elm2">
-                        <div className="screen1-thq-depth8-frame0-elm12">
-                          <span className="screen1-thq-text-elm14">{user.name}</span>
-                        </div>
-                        <div className="screen1-thq-depth8-frame1-elm1">
-                          <span className="screen1-thq-text-elm15">
-                            Skills Offered: {user.skillsOffered || "None"} | Wanted: {user.skillsWanted || "None"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="loading" style={{ height: 'auto', padding: '40px' }}>
-                    No users found matching your search.
+                      className="screen1-thq-depth8-frame0-elm11" /* Profile image container */
+                      style={{
+                        backgroundImage: `url(${user.image})`,
+                        backgroundPosition: "center",
+                        backgroundSize: "110%",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                    ></div>
                   </div>
-                )}
+                  <div className="screen1-thq-depth7-frame1-elm2">
+                    <div className="screen1-thq-depth8-frame0-elm12">
+                      <span className="screen1-thq-text-elm14">{user.name}</span>
+                    </div>
+                    <div className="screen1-thq-depth8-frame1-elm1">
+                      <span className="screen1-thq-text-elm15">
+                        Skills Offered: {user.skillsOffered || "None"} | Wanted: {user.skillsWanted || "None"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="loading" style={{ height: 'auto', padding: '40px' }}>
+                No users found matching your search.
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

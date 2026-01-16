@@ -29,8 +29,8 @@ const Header = () => {
 
     return (
         <header className="main-header">
-            <div className="screen18-thq-depth2-frame0-elm">
-                <div className="screen18-thq-depth3-frame2-elm" onClick={() => navigate('/explore')} style={{ cursor: 'pointer' }}>
+            <div className="header-content">
+                <div className="header-left">
                     <img
                         src="/depth5frame02272-ifv.svg"
                         alt="Logo"
@@ -43,11 +43,10 @@ const Header = () => {
                     </div>
                 </div>
 
-                <div className="screen18-thq-depth3-frame1-elm">
+                <div className="header-right">
                     {isAuthenticated ? (
                         <>
-                            <div
-                                className={`screen18-thq-depth4-frame1-elm2 ${isActive('/explore') ? 'active' : ''}`}
+                            <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/explore') ? 'active' : ''}`}
                                 onClick={() => navigate('/explore')}
                                 style={{ cursor: 'pointer' }}
                             >
@@ -55,17 +54,17 @@ const Header = () => {
                                     <span className="screen18-thq-text-elm12">Explore</span>
                                 </div>
                             </div>
-                            <div
-                                className={`screen18-thq-depth4-frame0-elm1 ${isActive('/dashboard') ? 'active' : ''}`}
+
+                            <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/dashboard') ? 'active' : ''}`}
                                 onClick={() => navigate('/dashboard')}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <div className="screen18-thq-depth5-frame0-elm11">
-                                    <span className="screen18-thq-text-elm11">Dashboard</span>
+                                <div className="screen18-thq-depth5-frame0-elm12" >
+                                    <span className="screen18-thq-text-elm12">Dashboard</span>
                                 </div>
                             </div>
-                            <div
-                                className={`screen18-thq-depth4-frame1-elm2 ${isActive('/messages') ? 'active' : ''}`}
+
+                            <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/messages') ? 'active' : ''}`}
                                 onClick={() => navigate('/messages')}
                                 style={{ cursor: 'pointer' }}
                             >
@@ -73,8 +72,8 @@ const Header = () => {
                                     <span className="screen18-thq-text-elm12">Messages</span>
                                 </div>
                             </div>
-                            <div
-                                className={`screen18-thq-depth4-frame1-elm2 ${isActive('/swap-requests') ? 'active' : ''}`}
+
+                            <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/swap-requests') ? 'active' : ''}`}
                                 onClick={() => navigate('/swap-requests')}
                                 style={{ cursor: 'pointer' }}
                             >
@@ -82,10 +81,12 @@ const Header = () => {
                                     <span className="screen18-thq-text-elm12">Swap Requests</span>
                                 </div>
                             </div>
+
                             <button onClick={handleLogout} className="logout-btn-refined" title="Logout">
                                 <LogOut size={18} />
                                 <span>Logout</span>
                             </button>
+
                             <div
                                 className={`screen18-thq-depth4-frame2-elm1 ${isActive('/profile') ? 'active' : ''}`}
                                 onClick={() => navigate('/profile')}
@@ -128,7 +129,7 @@ const Header = () => {
                     )}
                 </div>
             </div>
-        </header>
+        </header >
     );
 };
 

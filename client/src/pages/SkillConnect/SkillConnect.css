@@ -7,17 +7,6 @@
   flex-direction: column;
 }
 
-.screen1-thq-screen1-elm {
-  width: 100%;
-  height: auto;
-  display: flex;
-  overflow: hidden;
-  align-self: stretch;
-  align-items: flex-start;
-  flex-direction: column;
-  background-color: rgba(247, 249, 252, 1);
-}
-
 .screen1-thq-depth3-frame0-elm1 {
   gap: 16px;
   display: flex;
@@ -87,26 +76,12 @@
   text-decoration: none;
 }
 
-.screen1-thq-depth2-frame1-elm {
-  display: flex;
-  padding: 20px 160px;
-  flex-grow: 1;
-  align-self: stretch;
-  align-items: flex-start;
-  justify-content: center;
+.skillconnect-wrapper {
+  padding: 20px 160px 100px;
+  width: 100%;
 }
 
-.screen1-thq-depth3-frame0-elm2 {
-  width: 960px;
-  display: flex;
-  overflow: hidden;
-  flex-grow: 1;
-  align-items: flex-start;
-  flex-shrink: 0;
-  flex-direction: column;
-}
-
-.screen1-thq-depth4-frame0-elm3 {
+.search-container {
   display: flex;
   padding: 12px 16px;
   align-self: stretch;
@@ -172,10 +147,10 @@
   text-decoration: none;
 }
 
-.screen1-thq-depth4-frame1-elm2 {
+.availability-filter {
   gap: 12px;
   display: flex;
-  padding: 12px 16px 12px 12px;
+  padding: 12px 16px;
   flex-wrap: wrap;
   align-self: stretch;
   align-items: flex-start;
@@ -225,12 +200,20 @@
   flex-grow: 1;
 }
 
-.screen1-thq-depth4-frame2-elm {
+.users-list {
   gap: 12px;
   display: flex;
   padding: 16px;
   align-self: stretch;
   align-items: flex-start;
+  flex-direction: column;
+  max-height: 100vh;
+  display: flex;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
   flex-direction: column;
 }
 
@@ -920,8 +903,16 @@
 }
 
 /* Availability select */
-.screen1-availability-select {
-  padding: 8px;
+.availability-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(12, 20, 28, 0.7)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding: 8px 12px 8px 12px;
+  cursor: pointer;
+  min-width: 115px;
   border: none;
   outline: none;
   background-color: rgba(232, 237, 244, 1);

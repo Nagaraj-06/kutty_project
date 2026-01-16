@@ -1,4 +1,5 @@
 import { useGetUserSwapsQuery, useMarkSwapCompleteMutation } from '../../store/api/swapsApi'
+import { useGiveFeedbackMutation } from '../../store/api/feedbackApi'
 import { useSelector } from 'react-redux'
 import { getImageUrl } from '../../utils/imageUtils'
 import defaultProfilePic from '../../assets/images/default-profile-pic.png'
@@ -19,8 +20,15 @@ const Dashboard = (props) => {
     const [selectedRequest, setSelectedRequest] = useState(null)
     const [showDetails, setShowDetails] = useState(false)
 
+    // Feedback Modal State
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false)
+    const [feedbackRequest, setFeedbackRequest] = useState(null)
+    const [rating, setRating] = useState(0)
+    const [feedbackText, setFeedbackText] = useState('')
+
     const { data: swapsResponse, isLoading } = useGetUserSwapsQuery()
     const [markComplete] = useMarkSwapCompleteMutation()
+    const [giveFeedback] = useGiveFeedbackMutation()
 
     const tabItems = [
         { label: 'Accepted', status: 'ACCEPTED', path: '/dashboard' },
@@ -32,12 +40,47 @@ const Dashboard = (props) => {
     const swaps = swapsResponse?.data || []
     const filteredSwaps = swaps.filter(s => s.status === activeTab.toUpperCase())
 
-    const handleMarkComplete = async (swapId) => {
+    const handleMarkCompleteClick = (request) => {
+        setFeedbackRequest(request)
+        setRating(0)
+        setFeedbackText('')
+        setShowFeedbackModal(true)
+    }
+
+    const handleSubmitFeedback = async () => {
+        if (!feedbackRequest || rating === 0) {
+            alert("Please provide a rating.")
+            return
+        }
+
         try {
-            const result = await markComplete(swapId).unwrap();
-            alert(result.message);
+            const isFromMe = feedbackRequest.requestFrom.id === user?.id
+            // If I am From, I reviewed To (WantSkill). If I am To, I reviewed From (OfferSkill).
+            const isReciever = isFromMe ? feedbackRequest.requestTo : feedbackRequest.requestFrom
+            const reviewedSkill = isFromMe ? feedbackRequest.wantSkill : feedbackRequest.offerSkill
+
+            const feedbackData = {
+                skill_swap_id: feedbackRequest.id,
+                user_skill_id: reviewedSkill?.id, // Skill ID being reviewed
+                received_by: isReciever?.id, // User ID receiving feedback
+                feedback_text: feedbackText,
+                rating: rating
+            }
+
+            console.log("Submitting Feedback:", feedbackData)
+
+            // 1. Submit Feedback
+            await giveFeedback(feedbackData).unwrap()
+
+            // 2. Mark Complete
+            const result = await markComplete(feedbackRequest.id).unwrap()
+            alert(result.message || "Feedback submitted and swap marked as complete!")
+
+            setShowFeedbackModal(false)
+            setFeedbackRequest(null)
         } catch (err) {
-            alert("Failed to mark complete: " + (err?.data?.message || err.message));
+            console.error("Feedback Error:", err)
+            alert("Failed to submit feedback: " + (err?.data?.message || err.message))
         }
     }
 
@@ -47,160 +90,166 @@ const Dashboard = (props) => {
     }
 
     return (
+        /* Main container */
         <div className="screen14-container1">
             <Helmet>
                 <title>Dashboard - Skill Swap</title>
                 <meta property="og:title" content="Dashboard - Skill Swap" />
             </Helmet>
-            <div className="screen14-thq-screen14-elm">
-                <div className="screen14-thq-depth1-frame0-elm">
-                    <div className="screen14-thq-depth2-frame1-elm">
-                        <div className="screen14-thq-depth3-frame0-elm">
-                            <div className="screen14-thq-depth4-frame0-elm2">
-                                <div className="screen14-thq-depth5-frame0-elm3">
-                                    <div className="screen14-thq-depth6-frame0-elm1">
-                                        <span className="screen14-thq-text-elm14">
-                                            My Swaps Dashboard
-                                        </span>
-                                    </div>
-                                    <div className="screen14-thq-depth6-frame1-elm1">
-                                        <span className="screen14-thq-text-elm15">
-                                            Check your notifications and stats
+
+            {/* Page wrapper */}
+            <div className="dashboard-wrapper">
+                {/* Page content */}
+                <div className="page-content">
+                    <div className="screen14-thq-depth4-frame0-elm2">
+                        <div className="screen14-thq-depth5-frame0-elm3">
+                            <div className="screen14-thq-depth6-frame0-elm1">
+                                <span className="screen14-thq-text-elm14">
+                                    My Swaps Dashboard
+                                </span>
+                            </div>
+                            <div className="screen14-thq-depth6-frame1-elm1">
+                                <span className="screen14-thq-text-elm15">
+                                    Check your notifications and stats
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="screen14-thq-depth4-frame1-elm2">
+                        <div className="screen14-thq-depth5-frame0-elm4">
+                            {tabItems.map((tab, index) => (
+                                <div key={index} className={`screen14-thq-depth6-frame${index}-elm${(index === 0 || index === 1) ? '2' : ''} cursor-pointer`}
+                                    onClick={() => {
+                                        setActiveTab(tab.label)
+                                        history.push(tab.path)
+                                    }}>
+                                    <div className={`screen14-thq-depth7-frame0-elm${index + 1}`}>
+                                        <span className={`screen14-thq-text-elm1${index + 6} ${activeTab === tab.label ? 'dashboard-tab-active' : 'dashboard-tab-inactive'}`}>
+                                            {tab.label}
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="screen14-thq-depth4-frame1-elm2">
-                                <div className="screen14-thq-depth5-frame0-elm4">
-                                    {tabItems.map((tab, index) => (
-                                        <div key={index} className={`screen14-thq-depth6-frame${index}-elm${(index === 0 || index === 1) ? '2' : ''} cursor-pointer`}
-                                            onClick={() => {
-                                                setActiveTab(tab.label)
-                                                history.push(tab.path)
-                                            }}>
-                                            <div className={`screen14-thq-depth7-frame0-elm${index + 1}`}>
-                                                <span className={`screen14-thq-text-elm1${index + 6} ${activeTab === tab.label ? 'dashboard-tab-active' : 'dashboard-tab-inactive'}`}>
-                                                    {tab.label}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Filter Sction */}
+                    <div className="screen14-thq-depth4-frame2-elm2">
+                        <span className="screen14-thq-text-elm20">{activeTab} Requests</span>
+                    </div>
 
-                            <div className="screen14-thq-depth4-frame2-elm2">
-                                <span className="screen14-thq-text-elm20">{activeTab} Requests</span>
-                            </div>
+                    {/* Swaps List Scroll Container */}
+                    <div className="dashboard-list-scroll">
+                        {/* Loading and Empty States */}
+                        {isLoading ? (
+                            <div className="dashboard-loading">Loading your swaps...</div>
+                        ) : filteredSwaps.length === 0 ? (
+                            <div className="dashboard-empty">No {activeTab.toLowerCase()} swaps found.</div>
+                        ) : (
+                            filteredSwaps.map((request, index) => {
+                                const isFromMe = request.requestFrom.id === user?.id
+                                const otherUser = isFromMe ? request.requestTo : request.requestFrom
 
-                            {isLoading ? (
-                                <div className="dashboard-loading">Loading your swaps...</div>
-                            ) : filteredSwaps.length === 0 ? (
-                                <div className="dashboard-empty">No {activeTab.toLowerCase()} swaps found.</div>
-                            ) : (
-                                filteredSwaps.map((request, index) => {
-                                    const isFromMe = request.requestFrom.id === user?.id
-                                    const otherUser = isFromMe ? request.requestTo : request.requestFrom
+                                const cardClass = index % 2 === 0 ? 'screen14-thq-depth4-frame4-elm' : 'screen14-thq-depth4-frame3-elm'
+                                const innerFrameClass = index % 2 === 0 ? 'screen14-thq-depth5-frame0-elm5' : 'screen14-thq-depth5-frame0-elm6'
+                                const textFrameClass = index % 2 === 0 ? 'screen14-thq-depth6-frame0-elm3' : 'screen14-thq-depth6-frame0-elm4'
+                                const titleFrameClass = index % 2 === 0 ? 'screen14-thq-depth7-frame0-elm5' : 'screen14-thq-depth7-frame0-elm6'
+                                const msgFrameClass = index % 2 === 0 ? 'screen14-thq-depth8-frame2-elm1' : 'screen14-thq-depth8-frame2-elm2'
+                                const msgTextClass = index % 2 === 0 ? 'screen14-thq-text-elm23' : 'screen14-thq-text-elm27'
+                                const btnFrameClass = index % 2 === 0 ? 'screen14-thq-depth7-frame1-elm1' : 'screen14-thq-depth7-frame1-elm2'
+                                const btnInnerClass = index % 2 === 0 ? 'screen14-thq-depth8-frame0-elm2' : 'screen14-thq-depth8-frame0-elm4'
+                                const btnTextClass = index % 2 === 0 ? 'screen14-thq-text-elm24' : 'screen14-thq-text-elm28'
+                                const imgClass = index % 2 === 0 ? 'screen14-thq-depth6-frame1-elm3' : 'screen14-thq-depth6-frame1-elm4'
 
-                                    const cardClass = index % 2 === 0 ? 'screen14-thq-depth4-frame4-elm' : 'screen14-thq-depth4-frame3-elm'
-                                    const innerFrameClass = index % 2 === 0 ? 'screen14-thq-depth5-frame0-elm5' : 'screen14-thq-depth5-frame0-elm6'
-                                    const textFrameClass = index % 2 === 0 ? 'screen14-thq-depth6-frame0-elm3' : 'screen14-thq-depth6-frame0-elm4'
-                                    const titleFrameClass = index % 2 === 0 ? 'screen14-thq-depth7-frame0-elm5' : 'screen14-thq-depth7-frame0-elm6'
-                                    const msgFrameClass = index % 2 === 0 ? 'screen14-thq-depth8-frame2-elm1' : 'screen14-thq-depth8-frame2-elm2'
-                                    const msgTextClass = index % 2 === 0 ? 'screen14-thq-text-elm23' : 'screen14-thq-text-elm27'
-                                    const btnFrameClass = index % 2 === 0 ? 'screen14-thq-depth7-frame1-elm1' : 'screen14-thq-depth7-frame1-elm2'
-                                    const btnInnerClass = index % 2 === 0 ? 'screen14-thq-depth8-frame0-elm2' : 'screen14-thq-depth8-frame0-elm4'
-                                    const btnTextClass = index % 2 === 0 ? 'screen14-thq-text-elm24' : 'screen14-thq-text-elm28'
-                                    const imgClass = index % 2 === 0 ? 'screen14-thq-depth6-frame1-elm3' : 'screen14-thq-depth6-frame1-elm4'
-
-                                    return (
-                                        <div key={request.id} className={cardClass}>
-                                            <div className={innerFrameClass}>
-                                                <div className={textFrameClass}>
-                                                    <div className={titleFrameClass}>
-                                                        <div className={index % 2 === 0 ? 'screen14-thq-depth8-frame1-elm1' : 'screen14-thq-depth8-frame1-elm2'}>
-                                                            <span className={index % 2 === 0 ? 'screen14-thq-text-elm22' : 'screen14-thq-text-elm26'}>
-                                                                Swap with {otherUser.user_name}
-                                                            </span>
-                                                        </div>
-                                                        <div className={msgFrameClass}>
-                                                            <span
-                                                                className={`${msgTextClass} message-text3`}
-                                                                ref={(el) => {
-                                                                    if (el) {
-                                                                        // Check if text overflows
-                                                                        const isOverflowing = el.scrollHeight > el.clientHeight;
-                                                                        const readMoreBtn = el.nextElementSibling;
-                                                                        if (readMoreBtn && readMoreBtn.classList.contains('read-more-link')) {
-                                                                            readMoreBtn.style.display = isOverflowing ? 'inline-block' : 'none';
-                                                                        }
+                                return (
+                                    <div key={request.id} className={cardClass}>
+                                        <div className={innerFrameClass}>
+                                            <div className={textFrameClass}>
+                                                <div className={titleFrameClass}>
+                                                    <div className={index % 2 === 0 ? 'screen14-thq-depth8-frame1-elm1' : 'screen14-thq-depth8-frame1-elm2'}>
+                                                        <span className={index % 2 === 0 ? 'screen14-thq-text-elm22' : 'screen14-thq-text-elm26'}>
+                                                            Swap with {otherUser.user_name}
+                                                        </span>
+                                                    </div>
+                                                    <div className={msgFrameClass}>
+                                                        <span
+                                                            className={`${msgTextClass} message-text3`}
+                                                            ref={(el) => {
+                                                                if (el) {
+                                                                    // Check if text overflows
+                                                                    const isOverflowing = el.scrollHeight > el.clientHeight;
+                                                                    const readMoreBtn = el.nextElementSibling;
+                                                                    if (readMoreBtn && readMoreBtn.classList.contains('read-more-link')) {
+                                                                        readMoreBtn.style.display = isOverflowing ? 'inline-block' : 'none';
                                                                     }
-                                                                }}
-                                                            >
-                                                                {request.message || "No message provided."}
+                                                                }
+                                                            }}
+                                                        >
+                                                            {request.message || "No message provided."}
+                                                        </span>
+                                                        <span
+                                                            className="read-more-link"
+                                                            style={{ display: 'none' }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const messageText = e.target.previousSibling;
+                                                                messageText.classList.toggle('message-expanded');
+                                                                e.target.textContent = messageText.classList.contains('message-expanded') ? 'Read less' : 'Read more';
+                                                            }}
+                                                        >
+                                                            Read more
+                                                        </span>
+                                                    </div>
+                                                    <div className="dashboard-skills-mini">
+                                                        <span className="dashboard-skill-mini-tag dashboard-skill-offering">{request.offerSkill?.skill?.name}</span>
+                                                        <span className="dashboard-swap-icon">⇌</span>
+                                                        <span className="dashboard-skill-mini-tag dashboard-skill-wanting">{request.wantSkill?.skill?.name}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="dashboard-item-actions">
+                                                    <div className={`${btnFrameClass} cursor-pointer`} onClick={() => handleViewDetails(request)}>
+                                                        <div className={btnInnerClass}>
+                                                            <span className={btnTextClass}>
+                                                                View details
                                                             </span>
-                                                            <span
-                                                                className="read-more-link"
-                                                                style={{ display: 'none' }}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    const messageText = e.target.previousSibling;
-                                                                    messageText.classList.toggle('message-expanded');
-                                                                    e.target.textContent = messageText.classList.contains('message-expanded') ? 'Read less' : 'Read more';
-                                                                }}
-                                                            >
-                                                                Read more
-                                                            </span>
-                                                        </div>
-                                                        <div className="dashboard-skills-mini">
-                                                            <span className="dashboard-skill-mini-tag dashboard-skill-offering">{request.offerSkill?.skill?.name}</span>
-                                                            <span className="dashboard-swap-icon">⇌</span>
-                                                            <span className="dashboard-skill-mini-tag dashboard-skill-wanting">{request.wantSkill?.skill?.name}</span>
                                                         </div>
                                                     </div>
-                                                    <div className="dashboard-item-actions">
-                                                        <div className={`${btnFrameClass} cursor-pointer`} onClick={() => handleViewDetails(request)}>
+                                                    {request.status === "ACCEPTED" && (
+                                                        <div
+                                                            className={`${btnFrameClass} mark-complete-btn-custom`}
+                                                            onClick={(e) => { e.stopPropagation(); handleMarkCompleteClick(request); }}
+                                                        >
                                                             <div className={btnInnerClass}>
-                                                                <span className={btnTextClass}>
-                                                                    View details
+                                                                <span className={`${btnTextClass} mark-complete-text`}>
+                                                                    {(isFromMe ? request.completed_by_from : request.completed_by_to) ? "Done" : "Mark as Complete"}
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                        {request.status === "ACCEPTED" && (
-                                                            <div
-                                                                className={`${btnFrameClass} mark-complete-btn-custom`}
-                                                                onClick={(e) => { e.stopPropagation(); handleMarkComplete(request.id); }}
-                                                            >
-                                                                <div className={btnInnerClass}>
-                                                                    <span className={`${btnTextClass} mark-complete-text`}>
-                                                                        {(isFromMe ? request.completed_by_from : request.completed_by_to) ? "Done" : "Mark as Complete"}
-                                                                    </span>
-                                                                </div>
+                                                    )}
+                                                    {(request.status === "ACCEPTED" || request.status === "COMPLETED") && request.chat_sessions?.[0] && (
+                                                        <div
+                                                            className={`${btnFrameClass} cursor-pointer`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                history.push(`/messages/${request.chat_sessions[0].id}`)
+                                                            }}
+                                                        >
+                                                            <div className={btnInnerClass}>
+                                                                <span className={btnTextClass}>
+                                                                    View Chat
+                                                                </span>
                                                             </div>
-                                                        )}
-                                                        {(request.status === "ACCEPTED" || request.status === "COMPLETED") && request.chat_sessions?.[0] && (
-                                                            <div
-                                                                className={`${btnFrameClass} cursor-pointer`}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    history.push(`/messages/${request.chat_sessions[0].id}`)
-                                                                }}
-                                                            >
-                                                                <div className={btnInnerClass}>
-                                                                    <span className={btnTextClass}>
-                                                                        View Chat
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className={imgClass} style={{ backgroundImage: `url(${getImageUrl(otherUser.profile_pic_url, defaultProfilePic)})`, backgroundSize: 'cover' }}></div>
                                             </div>
+                                            <div className={imgClass} style={{ backgroundImage: `url(${getImageUrl(otherUser.profile_pic_url, defaultProfilePic)})`, backgroundSize: 'cover' }}></div>
                                         </div>
-                                    )
-                                })
-                            )}
-                        </div>
+                                    </div>
+                                )
+                            })
+                        )}
                     </div>
                 </div>
             </div>
@@ -232,6 +281,46 @@ const Dashboard = (props) => {
                                 <strong className="dashboard-detail-label">Message:</strong>
                                 <p className="dashboard-message-box">{selectedRequest.message || "No message."}</p>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Feedback Modal */}
+            {showFeedbackModal && feedbackRequest && (
+                <div className="dashboard-modal-overlay" onClick={() => setShowFeedbackModal(false)}>
+                    <div className="dashboard-modal-content feedback-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="dashboard-modal-header">
+                            <h2 className="dashboard-modal-title">Leave Feedback</h2>
+                            <button className="dashboard-modal-close" onClick={() => setShowFeedbackModal(false)}>×</button>
+                        </div>
+                        <div className="dashboard-modal-body">
+                            <p className="feedback-intro">How was your experience with <strong>{
+                                feedbackRequest.requestFrom.id === user?.id ? feedbackRequest.requestTo.user_name : feedbackRequest.requestFrom.user_name
+                            }</strong>?</p>
+
+                            <div className="rating-container">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <span
+                                        key={star}
+                                        className={`star-rating ${star <= rating ? 'filled' : ''}`}
+                                        onClick={() => setRating(star)}
+                                    >
+                                        ★
+                                    </span>
+                                ))}
+                            </div>
+
+                            <textarea
+                                className="feedback-textarea"
+                                placeholder="Share your experience (optional)..."
+                                value={feedbackText}
+                                onChange={(e) => setFeedbackText(e.target.value)}
+                            />
+
+                            <button className="submit-feedback-btn" onClick={handleSubmitFeedback}>
+                                Submit & Mark Complete
+                            </button>
                         </div>
                     </div>
                 </div>

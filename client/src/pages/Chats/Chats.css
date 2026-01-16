@@ -1,21 +1,10 @@
-.screen19-container1 {
+.page-wrapper {
     width: 100%;
-    display: flex;
-    overflow: auto;
-    min-height: 100vh;
-    align-items: center;
-    flex-direction: column;
-}
-
-.screen19-thq-screen19-elm {
-    width: 100%;
-    height: 100vh;
+    height: 100%;
     display: flex;
     overflow: hidden;
-    align-self: stretch;
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
-    background-color: rgba(249, 249, 249, 1);
 }
 
 .screen19-thq-depth1-frame0-elm {
@@ -24,7 +13,6 @@
     align-items: flex-start;
     flex-direction: column;
 }
-
 
 .screen19-thq-depth3-frame2-elm {
     gap: 16px;
@@ -63,45 +51,6 @@
     flex-grow: 1;
     align-items: flex-start;
     justify-content: flex-end;
-}
-
-.screen19-thq-depth2-frame1-elm {
-    display: flex;
-    padding: 20px 160px;
-    flex-grow: 1;
-    align-self: stretch;
-    align-items: flex-start;
-    justify-content: center;
-    height: 100vh;
-}
-
-
-.screen19-thq-depth3-frame0-elm {
-    width: 960px;
-    height: 100%;
-    display: flex;
-    overflow-x: hidden;
-    overflow-y: auto;
-    overflow: visible;
-    flex-grow: 1;
-    align-items: flex-start;
-    flex-shrink: 0;
-    flex-direction: column;
-}
-
-.screen19-thq-depth4-frame0-elm {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: #f9f9f9;
-    gap: 12px;
-    display: flex;
-    padding: 16px;
-    flex-wrap: wrap;
-    align-self: stretch;
-    align-items: flex-start;
-    flex-shrink: 0;
-    justify-content: space-between;
 }
 
 .screen19-thq-depth5-frame0-elm2 {
@@ -330,7 +279,6 @@
     width: 40px;
     height: 40px;
     display: flex;
-    overflow: hidden;
     position: relative;
     align-items: flex-start;
     flex-shrink: 0;
@@ -464,7 +412,6 @@
     width: 40px;
     height: 40px;
     display: flex;
-    overflow: hidden;
     position: relative;
     align-items: flex-start;
     flex-shrink: 0;
@@ -486,7 +433,6 @@
     width: 40px;
     height: 40px;
     display: flex;
-    overflow: hidden;
     position: relative;
     align-items: flex-start;
     flex-shrink: 0;
@@ -611,19 +557,6 @@
     text-decoration: none;
 }
 
-.screen19-thq-depth5-frame1-elm4 {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    overflow: hidden;
-    position: relative;
-    align-items: flex-start;
-    flex-shrink: 0;
-    border-radius: 20px;
-    background-size: cover;
-    background-image: url("../../assets/images/tq_xmnis9tsex-6z7n-200h.png");
-}
-
 .screen19-thq-depth4-frame7-elm {
     display: flex;
     padding: 16px 16px 8px;
@@ -665,9 +598,7 @@
 .screen19-thq-depth7-frame0-elm4 {
     display: flex;
     padding: 8px 8px 8px 16px;
-    overflow: hidden;
     flex-grow: 1;
-    align-self: stretch;
     align-items: center;
     border-radius: 12px 0 0 12px;
     background-color: rgba(234, 237, 242, 1);
@@ -739,7 +670,6 @@
     height: 32px;
     display: flex;
     padding: 0 16px;
-    overflow: hidden;
     align-items: center;
     flex-shrink: 0;
     border-radius: 12px;
@@ -751,7 +681,6 @@
 .screen19-thq-depth10-frame0-elm2 {
     gap: 10px;
     display: flex;
-    overflow: hidden;
     align-items: flex-start;
     flex-direction: column;
     justify-content: center;
@@ -804,4 +733,42 @@
     font-style: normal;
     font-weight: 500;
     line-height: 24px;
+}
+
+/* --------------- */
+
+.chat-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+    background: #f9f9f9;
+}
+
+.chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    bottom: 5px;
+}
+
+.chat-footer {
+    position: sticky;
+    bottom: 5px;
+    z-index: 10;
+    background: #f9f9f9;
+}
+
+.click-username {
+    cursor: pointer;
+    width: fit-content;
+}
+
+.click-username:hover {
+    text-decoration: underline;
 }

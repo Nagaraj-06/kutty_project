@@ -333,10 +333,8 @@
 }
 
 .screen13-thq-depth5-frame0-elm6 {
-  width: 84px;
-  height: 40px;
   display: flex;
-  padding: 0 16px;
+  padding: 10px 16px;
   overflow: hidden;
   align-items: center;
   flex-shrink: 0;

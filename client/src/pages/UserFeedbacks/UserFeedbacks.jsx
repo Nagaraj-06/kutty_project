@@ -51,105 +51,104 @@ const UserFeedbacks = (props) => {
       <Helmet>
         <title>Feedbacks - Skill Swap</title>
       </Helmet>
-      <div className="screen7-thq-screen7-elm">
-        <div className="screen7-thq-depth1-frame0-elm">
-          <div className="screen7-thq-depth2-frame1-elm">
-            <div className="screen7-thq-depth3-frame0-elm2">
-              <div className="screen7-thq-depth4-frame0-elm2">
-                <div className="screen7-thq-depth5-frame0-elm1">
-                  <div className="screen7-thq-depth6-frame2-elm1">
-                    <div className="screen7-thq-depth7-frame0-elm1">
-                      <div
-                        className="screen7-thq-depth8-frame0-elm10"
-                        style={{
-                          backgroundImage: `url(${getImageUrl(user.profile_pic_url, defaultProfilePic)})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
-                        }}
-                      ></div>
-                      <div className="screen7-thq-depth7-frame1-elm1">
-                        <div className="screen7-thq-depth8-frame0-elm11">
-                          <span className="screen7-thq-text-elm11">
-                            {user.user_name || "User"}
-                          </span>
-                        </div>
-                        <div className="screen7-thq-depth8-frame1-elm1">
-                          <span className="screen7-thq-text-elm12">
-                            Skills Offered: {skillsOffered} | Skills Wanted: {skillsWanted}
-                          </span>
-                          <span className="screen7-rating">
-                            Rating: {averageRating} ({feedbacks.length} reviews)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+      <div className="user-feedback-wrapper">
+        <div className="screen7-thq-depth4-frame0-elm2">
+          <div className="screen7-thq-depth5-frame0-elm1">
+            <div className="screen7-thq-depth6-frame2-elm1">
+              <div className="screen7-thq-depth7-frame0-elm1">
+                <div
+                  className="screen7-thq-depth8-frame0-elm10"
+                  style={{
+                    backgroundImage: `url(${getImageUrl(user.profile_pic_url, defaultProfilePic)})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }}
+                ></div>
+                <div className="screen7-thq-depth7-frame1-elm1">
+                  <div className="screen7-thq-depth8-frame0-elm11">
+                    <span className="screen7-thq-text-elm11">
+                      {user.user_name || "User"}
+                    </span>
                   </div>
-                  <div
-                    className="screen7-thq-depth6-frame1-elm1"
-                    onClick={() => navigate(`/swap-request-form/${userId}`)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="screen7-thq-depth7-frame0-elm2">
-                      <span className="screen7-thq-text-elm15">Request</span>
-                    </div>
+                  <div className="screen7-thq-depth8-frame1-elm1">
+                    <span className="screen7-thq-text-elm12">
+                      Skills Offered: {skillsOffered} | Skills Wanted: {skillsWanted}
+                    </span>
+                    <span className="screen7-rating">
+                      Rating: {averageRating} ({feedbacks.length} reviews)
+                    </span>
                   </div>
                 </div>
               </div>
-              <div className="screen7-thq-depth4-frame1-elm3">
-                <span className="screen7-thq-text-elm16">Feedback</span>
-              </div>
-              <div className="screen7-thq-depth4-frame2-elm">
-                {feedbacks.length === 0 ? (
-                  <div className="no-feedbacks">No feedbacks yet for this user.</div>
-                ) : (
-                  feedbacks.map((feedback, index) => (
-                    <div
-                      className={`screen7-thq-depth5-frame-elm`}
-                      key={feedback.id}
-                      style={{ marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}
-                    >
-                      <div className="screen7-thq-depth6-frame0-elm">
-                        <div
-                          className="screen7-feedback-avatar"
-                          style={{
-                            backgroundImage: `url(${getImageUrl(feedback.givenBy?.profile_pic_url, defaultProfilePic)})`,
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '50%',
-                            backgroundSize: 'cover',
-                            marginRight: '12px'
-                          }}
-                        ></div>
-
-                        <div className="screen7-thq-depth7-frame1-elm2">
-                          <div className="screen7-thq-depth8-frame0-elm">
-                            <span className="screen7-thq-text-elm17">
-                              {feedback.givenBy?.user_name || "Anonymous"}
-                            </span>
-                          </div>
-                          <div className="screen7-thq-depth8-frame1-elm">
-                            <span className="screen7-thq-text-elm18">
-                              {formatRelativeTime(feedback.created_at)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="screen7-thq-depth6-frame1-elm">
-                        <span className="screen7-stars">
-                          {"★".repeat(feedback.rating)}{"☆".repeat(5 - feedback.rating)}
-                        </span>
-                      </div>
-                      <div className="screen7-thq-depth6-frame2-elm">
-                        <span className="screen7-thq-text-elm19">
-                          {feedback.feedback_text}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                )}
+            </div>
+            <div
+              className="screen7-thq-depth6-frame1-elm1"
+              onClick={() => navigate(`/swap-request-form/${userId}`)}
+              style={{ cursor: "pointer" }}
+            >
+              <div className="screen7-thq-depth7-frame0-elm2">
+                <span className="screen7-thq-text-elm15">Request</span>
               </div>
             </div>
           </div>
+        </div>
+        <div className="screen7-thq-depth4-frame1-elm3">
+          <span className="screen7-thq-text-elm16">Feedback</span>
+        </div>
+        <div className="screen7-thq-depth4-frame2-elm">
+          {feedbacks.length === 0 ? (
+            <div className="no-feedbacks">No feedbacks yet for this user.</div>
+          ) : (
+            feedbacks.map((feedback, index) => (
+              <div
+                className={`feedback-item`}
+                key={feedback.id}
+                style={{ marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}
+              >
+                <div className="screen7-thq-depth6-frame0-elm">
+                  <div
+                    className="screen7-feedback-avatar cursor-pointer"
+                    onClick={() => feedback.givenBy?.id && history.push(`/profile/${feedback.givenBy.id}`)}
+                    style={{
+                      backgroundImage: `url(${getImageUrl(feedback.givenBy?.profile_pic_url, defaultProfilePic)})`,
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundSize: 'cover',
+                      marginRight: '12px',
+                      cursor: 'pointer'
+                    }}
+                  ></div>
+
+                  <div className="screen7-thq-depth7-frame1-elm2">
+                    <div className="screen7-thq-depth8-frame0-elm cursor-pointer"
+                      onClick={() => feedback.givenBy?.id && history.push(`/profile/${feedback.givenBy.id}`)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className="screen7-thq-text-elm17 screen7-username-clickable">
+                        {feedback.givenBy?.user_name || "Anonymous"}
+                      </span>
+                    </div>
+                    <div className="screen7-thq-depth8-frame1-elm">
+                      <span className="screen7-thq-text-elm18">
+                        {formatRelativeTime(feedback.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="screen7-thq-depth6-frame1-elm">
+                  <span className="screen7-stars">
+                    {"★".repeat(feedback.rating)}{"☆".repeat(5 - feedback.rating)}
+                  </span>
+                </div>
+                <div className="screen7-thq-depth6-frame2-elm">
+                  <span className="screen7-thq-text-elm19">
+                    {feedback.feedback_text}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
