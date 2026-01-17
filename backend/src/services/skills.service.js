@@ -46,34 +46,39 @@ async function getSkills() {
 
 // Get users skills
 async function getUsersSkills(currentUserId) {
-  // Step 1: Get active swaps
-  const activeSwaps = await prisma.skill_swaps.findMany({
-    where: {
-      OR: [{ request_from: currentUserId }, { request_to: currentUserId }],
-      status: { in: ["PENDING", "ACCEPTED"] },
-      is_active: true,
-    },
-    select: {
-      request_from: true,
-      request_to: true,
-    },
-  });
-
-  // Step 2: Users to exclude
-  const usersWithActiveSwaps = new Set(
-    activeSwaps.flatMap(swap => [swap.request_from, swap.request_to])
-  );
-  usersWithActiveSwaps.delete(currentUserId);
-
   // Step 3: Fetch user skills (flat)
-  const rows = await prisma.user_skills.findMany({
-    where: {
-      is_active: true,
-      user_id: {
-        not: currentUserId,
-        notIn: Array.from(usersWithActiveSwaps),
+  const whereClause = {
+    is_active: true,
+  };
+
+  if (currentUserId) {
+    // Step 1: Get active swaps
+    const activeSwaps = await prisma.skill_swaps.findMany({
+      where: {
+        OR: [{ request_from: currentUserId }, { request_to: currentUserId }],
+        status: { in: ["PENDING", "ACCEPTED"] },
+        is_active: true,
       },
-    },
+      select: {
+        request_from: true,
+        request_to: true,
+      },
+    });
+
+    // Step 2: Users to exclude
+    const usersWithActiveSwaps = new Set(
+      activeSwaps.flatMap(swap => [swap.request_from, swap.request_to])
+    );
+    usersWithActiveSwaps.delete(currentUserId);
+
+    whereClause.user_id = {
+      not: currentUserId,
+      notIn: Array.from(usersWithActiveSwaps),
+    };
+  }
+
+  const rows = await prisma.user_skills.findMany({
+    where: whereClause,
     select: {
       user: {
         select: {

@@ -32,7 +32,30 @@ async function getChatList(req, res, next) {
   }
 }
 
+async function uploadChatFile(req, res, next) {
+  try {
+    if (!req.file) {
+      const err = new Error("No file uploaded");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const fileUrl = `/chat_files/${req.file.filename}`;
+    res.status(200).json({
+      success: true,
+      message: "File uploaded successfully",
+      data: {
+        file_url: fileUrl,
+        original_name: req.file.originalname
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getMessages,
   getChatList,
+  uploadChatFile,
 };

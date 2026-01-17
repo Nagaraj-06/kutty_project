@@ -259,7 +259,10 @@
   color: rgba(73, 114, 155, 1);
 }
 
-.screen2-text-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px #e8edf4 inset;
-  background-color: #e8edf4 !important;
+.screen2-text-input:-webkit-autofill,
+.screen2-text-input:-webkit-autofill:hover,
+.screen2-text-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #e8edf4 inset !important;
+  -webkit-text-fill-color: rgba(12, 20, 28, 1) !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

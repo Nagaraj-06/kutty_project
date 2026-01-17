@@ -2,16 +2,17 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // Send message and save to DB
-async function sendMessage({ chat_session_id, sender_id, message }) {
+async function sendMessage({ chat_session_id, sender_id, message, file_url }) {
   return prisma.chat_messages.create({
     data: {
       chat_session_id,
       sender_id,
       message,
+      file_url,
       send_at: new Date(),
     },
     include: {
-      sender: { select: { id: true, email: true } },
+      sender: { select: { id: true, email: true, user_name: true, profile_pic_url: true } },
       chat_session: { select: { id: true, skill_swap_id: true } },
     },
   });
@@ -25,6 +26,7 @@ async function getMessagesBySession(chat_session_id) {
     select: {
       id: true,
       message: true,
+      file_url: true,
       send_at: true,
       sender: {
         select: {
@@ -97,9 +99,11 @@ async function getChatListService(userId) {
           chat_session_id: session.id,
           send_at: latestMsg._max.send_at,
         },
-        select: { message: true, sender_id: true, send_at: true },
+        select: { message: true, file_url: true, sender_id: true, send_at: true },
       });
     }
+
+    const lastMsgPreview = messageData?.message || (messageData?.file_url ? (messageData.file_url.match(/\.(jpeg|jpg|png|gif)$/i) ? "📷 Image" : messageData.file_url.match(/\.(mp4|mov|avi)$/i) ? "🎥 Video" : "📎 Attachment") : "No messages yet");
 
     // 5️⃣ Find opposite user
     const swap = skillSwaps.find((s) => s.id === session.skill_swap_id);
@@ -122,7 +126,7 @@ async function getChatListService(userId) {
         user_name: oppositeUser?.user_name,
         email: oppositeUser?.email,
         profile_pic_url: oppositeUser?.profile_pic_url,
-        last_message: messageData?.message || "No messages yet",
+        last_message: lastMsgPreview,
         last_message_sent_by_me: messageData?.sender_id === userId,
         updated_at: messageData?.send_at || null,
       },

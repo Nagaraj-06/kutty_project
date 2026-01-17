@@ -32,7 +32,7 @@ const App = () => {
             <Header />
             <div className="app-content">
                 <Switch>
-                    <Route component={SkillConnect} exact path="/explore" />
+                    <Route component={SkillConnect} exact path="/" />
                     <Route component={Login} exact path="/login" />
                     <Route component={SignIn} exact path="/signin" />
                     <Route component={UserProfile} exact path="/profile" />

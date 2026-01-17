@@ -2,6 +2,7 @@ const {
   signupUser,
   loginUser,
   verifyEmailService,
+  resendVerificationEmail,
 } = require("../../services/auth.service");
 
 // Signup
@@ -56,4 +57,23 @@ async function verifyEmailController(req, res, next) {
   }
 }
 
-module.exports = { signUp, signIn, verifyEmailController };
+async function resendVerification(req, res, next) {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      const err = new Error("Email is required");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const result = await resendVerificationEmail(email);
+    res.json({
+      success: true,
+      message: result.message,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { signUp, signIn, verifyEmailController, resendVerification };

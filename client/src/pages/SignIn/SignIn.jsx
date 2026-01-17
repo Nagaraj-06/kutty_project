@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useHistory } from "react-router-dom";
-import { useSignupMutation } from '../../store/api/authApi';
+import { useSignupMutation, useResendVerificationMutation } from '../../store/api/authApi';
 import "./SignIn.css";
 
 const SignIn = (props) => {
@@ -10,10 +10,11 @@ const SignIn = (props) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showResend, setShowResend] = useState(false);
   const history = useHistory();
 
   const [signup, { isLoading }] = useSignupMutation();
-
+  const [resendVerification, { isLoading: isResending }] = useResendVerificationMutation();
 
   const handleLoginClick = () => {
     history.push("/login");
@@ -23,19 +24,34 @@ const SignIn = (props) => {
     try {
       setError("");
       setSuccess("");
+      setShowResend(false);
       const response = await signup({
         user_name: username,
         email,
         password
       }).unwrap();
 
-      setSuccess(response.message || "Account created! Please check your email for verification (check your spam folder as well).");
-
-      // Optionally redirect after a delay
-      // setTimeout(() => history.push("/"), 3000);
+      setSuccess(response.message);
     } catch (err) {
-      setError(err?.data?.message || "Failed to create account. Please try again.");
+      setError(err?.data?.message || err?.message || "Failed to create account. Please try again.");
       console.error("Signup error:", err);
+
+      // If user exists but not verified (409 Conflict)
+      if (err?.status === 409 || err?.data?.message?.includes("not verified")) {
+        setShowResend(true);
+      }
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      setError("");
+      setSuccess("");
+      const response = await resendVerification({ email }).unwrap();
+      setSuccess(response.message);
+      setShowResend(false);
+    } catch (err) {
+      setError(err?.data?.message || "Failed to resend verification email.");
     }
   };
 
@@ -119,6 +135,38 @@ const SignIn = (props) => {
             </div>
           </div>
 
+          {showResend && (
+            <div
+              className="screen3-thq-depth5-frame0-elm5 resend-btn"
+              onClick={!isResending ? handleResendVerification : null}
+              style={{
+                cursor: isResending ? "not-allowed" : "pointer",
+                opacity: isResending ? 0.7 : 1,
+                marginTop: '12px',
+                backgroundColor: '#f1f5f9',
+                color: '#0c7ff2'
+              }}
+            >
+              <div className="screen6-thq-depth6-frame0-elm4">
+                <span className="screen3-thq-text-elm19" style={{ color: '#0c7ff2' }}>
+                  {isResending ? "Resending..." : "Resend Verification Email"}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <span style={{ fontSize: '14px', color: '#64748b' }}>
+              Already have an account?{" "}
+              <span
+                onClick={handleLoginClick}
+                className="login-link-span"
+                style={{ color: '#0c7ff2', cursor: 'pointer', fontWeight: '600' }}
+              >
+                Log in
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     </div>

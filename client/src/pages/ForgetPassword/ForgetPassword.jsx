@@ -21,7 +21,7 @@ const ForgetPassword = () => {
             setError("");
             setMessage("");
             await forgotPasswordRequest({ email }).unwrap();
-            setMessage("check your mail and verify within - 1 hour expiration");
+            setMessage("check your mail (including spam) and verify within - 1 hour expiration");
         } catch (err) {
             setError(err?.data?.message || "Failed to send reset link. Please try again.");
         }

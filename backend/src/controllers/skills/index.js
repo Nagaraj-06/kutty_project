@@ -44,8 +44,8 @@ async function getUserSkills(req, res, next) {
 
 async function getUsersSkills(req, res, next) {
   try {
-    
-    const user_id = req.user.id;
+
+    const user_id = req.user?.id;
     const skills = await skillService.getUsersSkills(user_id);
 
     res.json({

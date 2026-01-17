@@ -4,7 +4,7 @@ export const feedbackApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getFeedbacks: builder.query({
             query: (params) => ({
-                url: '/private/api/feedback',
+                url: '/public/api/feedback',
                 method: 'GET',
                 params: params, // Expects { userId: '...' }
             }),

@@ -18,6 +18,7 @@ app.use(
 );
 
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+app.use("/chat_files", express.static(path.join(__dirname, "public/chat_files")));
 
 // Routes
 app.get("/", (req, res) => res.send("API is running"));

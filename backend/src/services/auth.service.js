@@ -7,17 +7,47 @@ const sgMail = require("../config/sendgrid");
 const { frontendUrl } = require("../config/env");
 require("dotenv").config();
 
+// Helper to send verification email
+async function sendVerificationEmail(user, token) {
+  const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
+  const msg = {
+    to: user.email,
+    from: process.env.FROM_EMAIL,
+    subject: "Verify your Email - Skill Swap",
+    text: "Email Verification",
+    html: `<p>Hello ${user.user_name},</p>
+         <p>Click <a href="${verificationLink}">here</a> to verify your email.</p>`
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log("✅ Verification email sent to:", user.email);
+    return true;
+  } catch (error) {
+    console.error("❌ SendGrid error:", error.response ? error.response.body : error);
+    return false;
+  }
+}
+
 // Signup service
 async function signupUser({ user_name, email, password }) {
-  return await prisma.$transaction(async (tx) => {
-    // Check if user already exists
-    const existingUser = await tx.users.findUnique({ where: { email } });
-    if (existingUser) {
-      const err = new Error("User already exists");
+  // Check if user already exists
+  const existingUser = await prisma.users.findUnique({ where: { email } });
+
+  if (existingUser) {
+    if (existingUser.verified) {
+      const err = new Error("User already exists. Please log in.");
       err.statusCode = 400;
       throw err;
+    } else {
+      // User exists but not verified - tell them to check email
+      const err = new Error("Account exists but not verified. Check your email (including spam).");
+      err.statusCode = 409; // Conflict
+      throw err;
     }
+  }
 
+  return await prisma.$transaction(async (tx) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -37,7 +67,7 @@ async function signupUser({ user_name, email, password }) {
       },
     });
 
-    // Generate token
+    // Generate verification token
     const token = nanoid(32);
     await tx.reset_tokens.create({
       data: {
@@ -48,32 +78,67 @@ async function signupUser({ user_name, email, password }) {
     });
 
     // Send verification email
-    const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
+    const emailSent = await sendVerificationEmail(user, token);
 
-    try {
-      const msg = {
-        to: user.email,
-        from: process.env.FROM_EMAIL, // verified sender in SendGrid
-        subject: "Verify your Email",
-        text: "Email Verification",
-        html: `<p>Hello ${user.user_name},</p>
-         <p>Click <a href="${verificationLink}">here</a> to verify your email.</p>`,
-      };
-
-      await sgMail.send(msg);
-      console.log("✅ SendGrid API is working! Email sent successfully.");
-    } catch (error) {
-      console.error(
-        "❌ SendGrid test failed:",
-        error.response ? error.response.body : error
-      );
-
-      return { message: "SendGrid test failed" };
+    if (!emailSent) {
+      console.warn("User created but verification email failed to send.");
     }
 
-    // Success
-    return { message: "Account created! Please check your email for verification (check your spam folder as well).", email: user.email };
+    return {
+      message: "Account created! Check your email (including spam) to verify.",
+      email: user.email
+    };
   });
+}
+
+// Resend Verification Email
+async function resendVerificationEmail(email) {
+  const user = await prisma.users.findUnique({ where: { email } });
+
+  if (!user) {
+    const err = new Error("User not found");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  if (user.verified) {
+    const err = new Error("User is already verified. Please log in.");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  // Find or create a new token
+  let tokenRecord = await prisma.reset_tokens.findFirst({
+    where: {
+      user_id: user.id,
+      used: false,
+      token_expiry: { gt: new Date() }
+    },
+    orderBy: { created_at: 'desc' }
+  });
+
+  let token;
+  if (tokenRecord) {
+    token = tokenRecord.token;
+  } else {
+    token = nanoid(32);
+    await prisma.reset_tokens.create({
+      data: {
+        user_id: user.id,
+        token,
+        token_expiry: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      }
+    });
+  }
+
+  const emailSent = await sendVerificationEmail(user, token);
+  if (!emailSent) {
+    const err = new Error("Failed to send verification email. Please try again later.");
+    err.statusCode = 500;
+    throw err;
+  }
+
+  return { message: "Verification email resent! Check inbox or spam." };
 }
 
 // Login service
@@ -91,6 +156,12 @@ async function loginUser({ email, password }) {
   if (!validPassword) {
     const err = new Error("Invalid email or password");
     err.statusCode = 401;
+    throw err;
+  }
+
+  if (!user.verified) {
+    const err = new Error("Please verify your email address before logging in.");
+    err.statusCode = 403;
     throw err;
   }
 
@@ -139,4 +210,4 @@ async function verifyEmailService(token) {
   return { message: "Email verified successfully!" };
 }
 
-module.exports = { signupUser, loginUser, verifyEmailService };
+module.exports = { signupUser, loginUser, verifyEmailService, resendVerificationEmail };

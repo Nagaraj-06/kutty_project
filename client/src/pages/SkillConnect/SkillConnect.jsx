@@ -7,10 +7,12 @@ import defaultProfilePic from "../../assets/images/default-profile-pic.png";
 import { getImageUrl } from "../../utils/imageUtils";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSkillConnectSearch, setSkillConnectSearch } from '../../store/slices/filtersSlice';
+import { selectIsAuthenticated } from "../../store/slices/authSlice";
 
 const SkillConnect = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const reduxSearchTerm = useSelector(selectSkillConnectSearch);
   const [searchTerm, setSearchTerm] = useState(reduxSearchTerm);
   const [availabilityFilter, setAvailabilityFilter] = useState("All");
@@ -108,7 +110,7 @@ const SkillConnect = () => {
                 <div
                   key={user.id}
                   /* User card */
-                  className={`screen1-thq-depth6-frame${index % 6}-elm`}
+                  className={`screen1-thq-depth6-frame${index % 6}-elm user-card`}
                   onClick={() => navigate(`/feedbacks/${user.id}`)}
                   style={{ cursor: "pointer" }}
                 >
@@ -128,9 +130,11 @@ const SkillConnect = () => {
                       <span className="screen1-thq-text-elm14">{user.name}</span>
                     </div>
                     <div className="screen1-thq-depth8-frame1-elm1">
-                      <span className="screen1-thq-text-elm15">
-                        Skills Offered: {user.skillsOffered || "None"} | Wanted: {user.skillsWanted || "None"}
-                      </span>
+                      <div className="skills-description-container">
+                        <span className="screen1-thq-text-elm15 line-clamp-2">
+                          Skills Offered: {user.skillsOffered || "None"} | Wanted: {user.skillsWanted || "None"}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

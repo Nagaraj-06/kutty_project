@@ -352,7 +352,7 @@
 
 .screen14-thq-depth6-frame0-elm3 {
     gap: 16px;
-    width: 608px;
+    flex: 1;
     height: 171px;
     display: flex;
     align-items: flex-start;
@@ -464,16 +464,14 @@
 }
 
 .screen14-thq-depth6-frame1-elm3 {
-    width: 320px;
+    width: 250px;
     height: 171px;
     display: flex;
     overflow: hidden;
     position: relative;
-    flex-grow: 1;
-    align-items: flex-start;
     flex-shrink: 0;
     border-radius: 8px;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -498,7 +496,7 @@
 
 .screen14-thq-depth6-frame0-elm4 {
     gap: 16px;
-    width: 608px;
+    flex: 1;
     height: 171px;
     display: flex;
     align-items: flex-start;
@@ -610,16 +608,14 @@
 }
 
 .screen14-thq-depth6-frame1-elm4 {
-    width: 320px;
+    width: 171px;
     height: 171px;
     display: flex;
     overflow: hidden;
     position: relative;
-    flex-grow: 1;
-    align-items: flex-start;
     flex-shrink: 0;
     border-radius: 8px;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }

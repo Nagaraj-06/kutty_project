@@ -19,7 +19,7 @@ export const userApi = baseApi.injectEndpoints({
         }),
         getUserPublicProfile: builder.query({
             query: (userId) => ({
-                url: `/private/api/users/profile/${userId}`,
+                url: `/public/api/users/profile/${userId}`,
                 method: 'GET',
             }),
             providesTags: (result, error, arg) => [{ type: 'User', id: arg }],

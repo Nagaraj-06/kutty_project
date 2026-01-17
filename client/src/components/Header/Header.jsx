@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, selectCurrentUser, selectIsAuthenticated } from '../../store/slices/authSlice';
+import { resetFilters } from '../../store/slices/filtersSlice';
 import { LogOut } from 'lucide-react';
 import './Header.css';
 import { getImageUrl } from '../../utils/imageUtils';
@@ -22,6 +23,7 @@ const Header = () => {
 
     const handleLogout = () => {
         dispatch(logout());
+        dispatch(resetFilters());
         history.push('/login');
     };
 
@@ -46,8 +48,8 @@ const Header = () => {
                 <div className="header-right">
                     {isAuthenticated ? (
                         <>
-                            <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/explore') ? 'active' : ''}`}
-                                onClick={() => navigate('/explore')}
+                            <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/') ? 'active' : ''}`}
+                                onClick={() => navigate('/')}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">
@@ -99,8 +101,8 @@ const Header = () => {
                     ) : (
                         <>
                             <div
-                                className={`screen18-thq-depth4-frame1-elm2 ${isActive('/explore') ? 'active' : ''}`}
-                                onClick={() => navigate('/explore')}
+                                className={`screen18-thq-depth4-frame1-elm2 ${isActive('/') ? 'active' : ''}`}
+                                onClick={() => navigate('/')}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">

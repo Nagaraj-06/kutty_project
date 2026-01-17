@@ -8,6 +8,8 @@ import defaultProfilePic from "../../assets/images/default-profile-pic.png";
 import { getImageUrl } from "../../utils/imageUtils";
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserInfo } from '../../store/slices/authSlice';
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from "../../utils/cropUtils";
 
 const UserProfile = () => {
   const history = useHistory();
@@ -46,7 +48,14 @@ const UserProfile = () => {
     profileImage: null,
     selectedFile: null,
     previewUrl: null,
+    croppedImage: null, // Stores the final cropped blob
   });
+
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState(null);
 
   const [originalData, setOriginalData] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
@@ -152,7 +161,9 @@ const UserProfile = () => {
       ];
       formData.append("skills", JSON.stringify(skillsPayload));
 
-      if (userData.selectedFile) {
+      if (userData.croppedImage) {
+        formData.append("profile_pic", userData.croppedImage, "profile_pic.jpg");
+      } else if (userData.selectedFile) {
         formData.append("profile_pic", userData.selectedFile);
       }
 
@@ -300,22 +311,41 @@ const UserProfile = () => {
       }
 
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setUserData((prev) => {
-          // If we had a previous preview URL, revoke it to avoid memory leaks
-          if (prev.previewUrl) {
-            URL.revokeObjectURL(prev.previewUrl);
-          }
-          const previewUrl = URL.createObjectURL(file);
-          return {
-            ...prev,
-            selectedFile: file,
-            previewUrl: previewUrl
-          };
-        });
+      reader.onload = () => {
+        setImageToCrop(reader.result);
+        setShowCropper(true);
       };
       reader.readAsDataURL(file);
     }
+    // Reset input value so same file can be selected again
+    e.target.value = '';
+  };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleCropSave = async () => {
+    try {
+      const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels);
+      const previewUrl = URL.createObjectURL(croppedBlob);
+
+      setUserData(prev => ({
+        ...prev,
+        croppedImage: croppedBlob,
+        previewUrl: previewUrl
+      }));
+      setShowCropper(false);
+      setHasChanges(true);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to crop image");
+    }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setImageToCrop(null);
   };
 
   const navigate = (path) => {
@@ -331,10 +361,13 @@ const UserProfile = () => {
         <meta property="og:title" content="UserProfile - Skill Swap" />
       </Helmet>
       <div className="profile-page">
+
         <div className="user-profile-header">
+
           <div className="screen6-thq-depth5-frame0-elm4">
             <span className="screen6-thq-text-elm13">{viewingOtherUser ? "Profile" : "User Profile"}</span>
           </div>
+
           {!isReadOnly && (hasChanges || updating) && (
             <div
               className="screen6-thq-depth5-frame1-elm1"
@@ -534,115 +567,124 @@ const UserProfile = () => {
         </div>
 
         {/* Availability */}
-        <div className="screen6-thq-depth4-frame6-elm">
-          <span className="screen6-thq-text-elm24">Availability</span>
-        </div>
-        <div className="screen6-thq-depth4-frame7-elm">
-          <div className="screen6-thq-depth5-frame0-elm8">
-            <div className="screen6-availability-slots">
-              {userData.slots.map((slot, index) => (
-                <div key={index} className="screen6-slot-item">
-                  <div className="screen6-slot-content">
-                    <div className="screen6-slot-day">
-                      {getDayName(slot.day_of_week)}
-                    </div>
-                    <div className="screen6-slot-time">
-                      {formatTime(slot.from_time)} -{" "}
-                      {formatTime(slot.to_time)}
-                    </div>
-                  </div>
-                  {!isReadOnly && (
-                    <button
-                      onClick={() => removeSlot(index)}
-                      className="screen6-slot-remove"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
+        {(userData.slots.length > 0 || !isReadOnly) && (
+          <>
+            <div className="screen6-thq-depth4-frame6-elm">
+              <span className="screen6-thq-text-elm24">Availability</span>
             </div>
-
-            {!isReadOnly && (
-              !showSlotPicker ? (
-                <button
-                  onClick={() => setShowSlotPicker(true)}
-                  className="screen6-add-slot-btn"
-                >
-                  + Add Time Slot
-                </button>
-              ) : (
-                <div className="screen6-slot-picker">
-                  <div className="screen6-slot-picker-field">
-                    <label className="screen6-slot-label">Day</label>
-                    <select
-                      value={newSlot.day_of_week}
-                      onChange={(e) =>
-                        setNewSlot((prev) => ({
-                          ...prev,
-                          day_of_week: e.target.value,
-                        }))
-                      }
-                      className="screen6-slot-select"
-                    >
-                      <option value="MON">Monday</option>
-                      <option value="TUES">Tuesday</option>
-                      <option value="WED">Wednesday</option>
-                      <option value="THURS">Thursday</option>
-                      <option value="FRI">Friday</option>
-                      <option value="SAT">Saturday</option>
-                      <option value="SUN">Sunday</option>
-                    </select>
-                  </div>
-                  <div className="screen6-slot-picker-times">
-                    <div className="screen6-slot-picker-field">
-                      <label className="screen6-slot-label">From</label>
-                      <input
-                        type="time"
-                        value={newSlot.from_time}
-                        onChange={(e) =>
-                          setNewSlot((prev) => ({
-                            ...prev,
-                            from_time: e.target.value,
-                          }))
-                        }
-                        className="screen6-slot-input"
-                      />
+            <div className="screen6-thq-depth4-frame7-elm">
+              <div className="screen6-thq-depth5-frame0-elm8">
+                <div className="screen6-availability-slots">
+                  {userData.slots.length === 0 && !isReadOnly && (
+                    <div style={{ color: "#49729b", fontSize: "14px", marginBottom: "15px", padding: '10px', backgroundColor: '#f0f4f8', borderRadius: '8px', textAlign: 'center' }}>
+                      No availability slots added yet. Add your preferred times to help others connect with you.
                     </div>
-                    <div className="screen6-slot-picker-field">
-                      <label className="screen6-slot-label">To</label>
-                      <input
-                        type="time"
-                        value={newSlot.to_time}
-                        onChange={(e) =>
-                          setNewSlot((prev) => ({
-                            ...prev,
-                            to_time: e.target.value,
-                          }))
-                        }
-                        className="screen6-slot-input"
-                      />
+                  )}
+                  {userData.slots.map((slot, index) => (
+                    <div key={index} className="screen6-slot-item">
+                      <div className="screen6-slot-content">
+                        <div className="screen6-slot-day">
+                          {getDayName(slot.day_of_week)}
+                        </div>
+                        <div className="screen6-slot-time">
+                          {formatTime(slot.from_time)} -{" "}
+                          {formatTime(slot.to_time)}
+                        </div>
+                      </div>
+                      {!isReadOnly && (
+                        <button
+                          onClick={() => removeSlot(index)}
+                          className="screen6-slot-remove"
+                        >
+                          ×
+                        </button>
+                      )}
                     </div>
-                  </div>
-                  <div className="screen6-slot-picker-actions">
-                    <button
-                      onClick={addSlot}
-                      className="screen6-slot-add-btn"
-                    >
-                      Add
-                    </button>
-                    <button
-                      onClick={() => setShowSlotPicker(false)}
-                      className="screen6-slot-cancel-btn"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              )
-            )}
-          </div>
-        </div>
+
+                {!isReadOnly && (
+                  !showSlotPicker ? (
+                    <button
+                      onClick={() => setShowSlotPicker(true)}
+                      className="screen6-add-slot-btn"
+                    >
+                      + Add Time Slot
+                    </button>
+                  ) : (
+                    <div className="screen6-slot-picker">
+                      <div className="screen6-slot-picker-field">
+                        <label className="screen6-slot-label">Day</label>
+                        <select
+                          value={newSlot.day_of_week}
+                          onChange={(e) =>
+                            setNewSlot((prev) => ({
+                              ...prev,
+                              day_of_week: e.target.value,
+                            }))
+                          }
+                          className="screen6-slot-select"
+                        >
+                          <option value="MON">Monday</option>
+                          <option value="TUES">Tuesday</option>
+                          <option value="WED">Wednesday</option>
+                          <option value="THURS">Thursday</option>
+                          <option value="FRI">Friday</option>
+                          <option value="SAT">Saturday</option>
+                          <option value="SUN">Sunday</option>
+                        </select>
+                      </div>
+                      <div className="screen6-slot-picker-times">
+                        <div className="screen6-slot-picker-field">
+                          <label className="screen6-slot-label">From</label>
+                          <input
+                            type="time"
+                            value={newSlot.from_time}
+                            onChange={(e) =>
+                              setNewSlot((prev) => ({
+                                ...prev,
+                                from_time: e.target.value,
+                              }))
+                            }
+                            className="screen6-slot-input"
+                          />
+                        </div>
+                        <div className="screen6-slot-picker-field">
+                          <label className="screen6-slot-label">To</label>
+                          <input
+                            type="time"
+                            value={newSlot.to_time}
+                            onChange={(e) =>
+                              setNewSlot((prev) => ({
+                                ...prev,
+                                to_time: e.target.value,
+                              }))
+                            }
+                            className="screen6-slot-input"
+                          />
+                        </div>
+                      </div>
+                      <div className="screen6-slot-picker-actions">
+                        <button
+                          onClick={addSlot}
+                          className="screen6-slot-add-btn"
+                        >
+                          Add
+                        </button>
+                        <button
+                          onClick={() => setShowSlotPicker(false)}
+                          className="screen6-slot-cancel-btn"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Profile Visibility */}
         {!isReadOnly && (
@@ -687,6 +729,46 @@ const UserProfile = () => {
           </>
         )}
       </div>
+
+      {showCropper && (
+        <div className="cropper-modal-overlay">
+          <div className="cropper-modal-content">
+            <h3 className="cropper-modal-title">Adjust Profile Picture</h3>
+            <div className="cropper-container">
+              <Cropper
+                image={imageToCrop}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            <div className="cropper-controls">
+              <div className="zoom-slider-container">
+                <label>Zoom</label>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e) => setZoom(e.target.value)}
+                  className="zoom-range"
+                />
+              </div>
+              <div className="cropper-actions">
+                <button className="crop-cancel-btn" onClick={handleCropCancel}>Cancel</button>
+                <button className="crop-save-btn" onClick={handleCropSave}>Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
 
   );

@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import io from 'socket.io-client';
 import Peer from 'peerjs';
+import { SOCKET_URL } from '../../config/constants';
 import './VideoCallMain.css';
-
-const SOCKET_URL = 'http://localhost:8080'; // Make sure this matches backend
 
 const VideoCallMain = () => {
     const [isMicOn, setIsMicOn] = useState(true);

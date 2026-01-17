@@ -4,6 +4,7 @@ const {
   signUp,
   signIn,
   verifyEmailController,
+  resendVerification,
 } = require("../../../controllers/auth");
 const { signUpSchema, signInSchema } = require("./schema");
 const validate = require("../../../middlewares/validate.middleware");
@@ -84,5 +85,26 @@ router.post("/signin", validate(signInSchema), signIn);
  */
 
 router.get("/verify_email", verifyEmailController);
+
+/**
+ * @swagger
+ * /public/api/auth/resend-verification:
+ *   post:
+ *     summary: Resend verification email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Verification email resent
+ */
+router.post("/resend-verification", resendVerification);
 
 module.exports = router;

@@ -28,10 +28,18 @@ const { getMessagesSchema } = require("./schema");
  *               $ref: '#/components/schemas/GetChatResponse'
  */
 
+const chatUpload = require("../../../middlewares/chatUploadMiddleware");
+
 router.get(
   "/get_chat",
   validate(getMessagesSchema, "query"),
   chatController.getMessages
+);
+
+router.post(
+  "/upload-file",
+  chatUpload.single("file"),
+  chatController.uploadChatFile
 );
 
 /**

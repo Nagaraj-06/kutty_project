@@ -11,7 +11,18 @@ export const chatApi = baseApi.injectEndpoints({
             query: (chatSessionId) => `/private/api/chat/get_chat?chat_session_id=${chatSessionId}`,
             providesTags: (result, error, id) => [{ type: 'ChatMessages', id }],
         }),
+        uploadChatFile: builder.mutation({
+            query: (formData) => ({
+                url: '/private/api/chat/upload-file',
+                method: 'POST',
+                body: formData,
+            }),
+        }),
     }),
 });
 
-export const { useGetChatListQuery, useGetChatMessagesQuery } = chatApi;
+export const {
+    useGetChatListQuery,
+    useGetChatMessagesQuery,
+    useUploadChatFileMutation
+} = chatApi;

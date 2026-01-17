@@ -6,10 +6,13 @@ import { useGetUserPublicProfileQuery } from "../../store/api/userApi";
 import { useGetFeedbacksQuery } from "../../store/api/feedbackApi";
 import { getImageUrl } from "../../utils/imageUtils";
 import defaultProfilePic from "../../assets/images/default-profile-pic.png";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../../store/slices/authSlice";
 
 const UserFeedbacks = (props) => {
   const history = useHistory();
   const { userId } = useParams();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   const { data: profileResponse, isLoading: profileLoading } = useGetUserPublicProfileQuery(userId);
   const { data: feedbackResponse, isLoading: feedbackLoading } = useGetFeedbacksQuery({ userId });
@@ -54,42 +57,94 @@ const UserFeedbacks = (props) => {
       <div className="user-feedback-wrapper">
         <div className="screen7-thq-depth4-frame0-elm2">
           <div className="screen7-thq-depth5-frame0-elm1">
-            <div className="screen7-thq-depth6-frame2-elm1">
-              <div className="screen7-thq-depth7-frame0-elm1">
+
+            {/* container for user profile card */}
+            <div className="user-profile-card">
+
+              {/* Wrapper for profile image + user info */}
+              <div className="user-profile-info">
+
+                {/* User profile picture */}
                 <div
-                  className="screen7-thq-depth8-frame0-elm10"
+                  className="user-profile-picture cursor-pointer"
+                  onClick={() => userId && history.push(`/profile/${userId}`)}
                   style={{
+                    // Show user profile image or default image
                     backgroundImage: `url(${getImageUrl(user.profile_pic_url, defaultProfilePic)})`,
                     backgroundSize: 'cover',
-                    backgroundPosition: 'center'
+                    cursor: "pointer"
                   }}
                 ></div>
+
+                {/* Container for user name, skills, and rating */}
                 <div className="screen7-thq-depth7-frame1-elm1">
-                  <div className="screen7-thq-depth8-frame0-elm11">
-                    <span className="screen7-thq-text-elm11">
+
+                  {/* User name */}
+                  <div
+                    className="screen7-thq-depth8-frame0-elm11 cursor-pointer"
+                    onClick={() => userId && history.push(`/profile/${userId}`)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span className="screen7-thq-text-elm11 screen7-username-clickable">
                       {user.user_name || "User"}
                     </span>
                   </div>
+
+                  {/* Skills and rating section */}
                   <div className="screen7-thq-depth8-frame1-elm1">
-                    <span className="screen7-thq-text-elm12">
-                      Skills Offered: {skillsOffered} | Skills Wanted: {skillsWanted}
-                    </span>
+
+                    {/* Skills offered and wanted by the user */}
+                    <div className="profile-skills-container">
+                      <span className="screen7-thq-text-elm12 profile-skills-trunc">
+                        Skills Offered: {skillsOffered} | Skills Wanted: {skillsWanted}
+                      </span>
+                      <span
+                        className="read-more-link"
+                        style={{ display: 'none' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const skillsText = e.target.previousSibling;
+                          skillsText.classList.toggle('message-expanded');
+                          e.target.textContent = skillsText.classList.contains('message-expanded') ? 'Read less' : 'Read more';
+                        }}
+                      >
+                        Read more
+                      </span>
+                    </div>
+
+                    {/* User rating and total reviews */}
                     <span className="screen7-rating">
                       Rating: {averageRating} ({feedbacks.length} reviews)
                     </span>
+
                   </div>
                 </div>
               </div>
+
             </div>
+
             <div
-              className="screen7-thq-depth6-frame1-elm1"
-              onClick={() => navigate(`/swap-request-form/${userId}`)}
-              style={{ cursor: "pointer" }}
+              className={`screen7-thq-depth6-frame1-elm1 ${!isAuthenticated ? 'disabled-btn' : ''}`}
+              onClick={() => {
+                if (isAuthenticated) {
+                  navigate(`/swap-request-form/${userId}`);
+                } else {
+                  alert("Please log in to send a swap request.");
+                  history.push("/login");
+                }
+              }}
+              style={{
+                cursor: "pointer",
+                opacity: isAuthenticated ? 1 : 0.7
+              }}
             >
               <div className="screen7-thq-depth7-frame0-elm2">
-                <span className="screen7-thq-text-elm15">Request</span>
+                <span className="screen7-thq-text-elm15">
+                  {isAuthenticated ? "Request" : "Login to Request"}
+                </span>
               </div>
             </div>
+
           </div>
         </div>
         <div className="screen7-thq-depth4-frame1-elm3">

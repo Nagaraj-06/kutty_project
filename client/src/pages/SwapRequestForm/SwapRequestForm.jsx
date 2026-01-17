@@ -5,9 +5,19 @@ import { useGetUserProfileQuery, useGetUserPublicProfileQuery } from "../../stor
 import { useCreateSwapMutation } from "../../store/api/swapsApi";
 import "./SwapRequestForm.css";
 
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../../store/slices/authSlice";
+
 const SwapRequestForm = (props) => {
   const history = useHistory();
   const { userId } = useParams(); // Target user's ID
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      history.push("/login");
+    }
+  }, [isAuthenticated, history]);
 
   const [selectedOfferedSkillId, setSelectedOfferedSkillId] = useState("");
   const [selectedWantedSkillId, setSelectedWantedSkillId] = useState("");
@@ -35,7 +45,8 @@ const SwapRequestForm = (props) => {
       history.push("/dashboard");
     } catch (err) {
       console.error("Failed to create swap request:", err);
-      alert(err?.data?.message || "Failed to send swap request. Ensure mutual skills match.");
+      const errorMessage = err?.data?.message || err?.message || "Failed to send swap request. Ensure mutual skills match.";
+      alert(errorMessage);
     }
   };
 

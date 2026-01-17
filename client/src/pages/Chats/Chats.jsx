@@ -3,23 +3,33 @@ import { useParams, useHistory } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import { useSelector } from 'react-redux'
 import { io } from 'socket.io-client'
-import { useGetChatListQuery, useGetChatMessagesQuery } from '../../store/api/chatApi'
+import { Paperclip, Copy, FileText, Check, X } from 'lucide-react'
+import {
+    useGetChatListQuery,
+    useGetChatMessagesQuery,
+    useUploadChatFileMutation
+} from '../../store/api/chatApi'
 import { getImageUrl } from '../../utils/imageUtils'
 import defaultProfilePic from '../../assets/images/default-profile-pic.png'
+import { SOCKET_URL, BACKEND_URL } from '../../config/constants'
 import './Chats.css'
-
-// Backend sockert server url
-const SOCKET_URL = 'http://localhost:8080'
 
 const Chats = (props) => {
     const { chatId } = useParams()
     const history = useHistory()
     const { user } = useSelector(state => state.auth)
     const { data: messagesResponse, isLoading } = useGetChatMessagesQuery(chatId)
+    const [uploadChatFile] = useUploadChatFileMutation()
+
     const [newMessage, setNewMessage] = useState("")
     const [allMessages, setAllMessages] = useState([])
+    const [isUploading, setIsUploading] = useState(false)
+    const [copiedId, setCopiedId] = useState(null)
+    const [selectedImage, setSelectedImage] = useState(null)
+
     const messagesEndRef = useRef(null)
     const socketRef = useRef(null)
+    const fileInputRef = useRef(null)
 
     // Sync RTK Query messages to local state when they load
     useEffect(() => {
@@ -71,6 +81,23 @@ const Chats = (props) => {
 
     const isFirstLoad = useRef(true)
 
+    // Handle Escape key to close fullscreen image
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setSelectedImage(null)
+            }
+        }
+
+        if (selectedImage) {
+            window.addEventListener('keydown', handleKeyDown)
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [selectedImage])
+
     useEffect(() => {
         if (allMessages.length > 0) {
             if (isFirstLoad.current) {
@@ -82,25 +109,23 @@ const Chats = (props) => {
         }
     }, [allMessages])
 
-    const handleSendMessage = () => {
-        if (!newMessage.trim() || !user || !chatId) return
+    const handleSendMessage = (content = null, fileUrl = null) => {
+        const messageText = content || newMessage.trim()
+        if (!messageText && !fileUrl) return
+        if (!user || !chatId) return
 
         const messagePayload = {
             chat_session_id: chatId,
             sender_id: user.id,
-            message: newMessage.trim()
+            message: messageText,
+            file_url: fileUrl
         }
 
         // Optimistically update UI
-        // We create a temporary message object. Backend usually returns a real ID and timestamp.
-        // For now we assume success or fetch refreshed data later.
-        // Or better: Wait for socket "new_message" if backend echoed it. 
-        // BUT backend says: socket.broadcast.to(...).emit(...) -> Excludes sender.
-        // So we MUST add it locally.
-
         const optimisticMessage = {
             id: Date.now().toString(), // Temp ID
-            message: newMessage,
+            message: messageText,
+            file_url: fileUrl,
             sender: {
                 id: user.id,
                 user_name: user.user_name || "You",
@@ -111,12 +136,132 @@ const Chats = (props) => {
         }
 
         setAllMessages(prev => [...prev, optimisticMessage])
-        setNewMessage("")
+        if (!content) setNewMessage("")
 
         // Emit to backend
         if (socketRef.current) {
             socketRef.current.emit('send_message', messagePayload)
         }
+    }
+
+    const handleFileClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        const formData = new FormData()
+        formData.append('file', file)
+
+        setIsUploading(true)
+        try {
+            const response = await uploadChatFile(formData).unwrap()
+            if (response.success) {
+                // If there's no text in newMessage, we use original filename as the message content
+                // to preserve the filename for display.
+                handleSendMessage(newMessage || response.data.original_name, response.data.file_url)
+            }
+        } catch (err) {
+            console.error("Upload failed:", err)
+            alert("Failed to upload file.")
+        } finally {
+            setIsUploading(false)
+            e.target.value = null // Reset input
+        }
+    }
+
+    const handleCopy = (id, text, fileUrl) => {
+        const content = text || (fileUrl ? `${BACKEND_URL}${fileUrl}` : "")
+        if (!content) return
+
+        navigator.clipboard.writeText(content).then(() => {
+            setCopiedId(id)
+            setTimeout(() => setCopiedId(null), 2000)
+        })
+    }
+
+    const renderMessageContent = (msg) => {
+        const isImage = msg.file_url?.match(/\.(jpeg|jpg|png|gif)$/i)
+        const isVideo = msg.file_url?.match(/\.(mp4|mov|avi)$/i)
+        const isMedia = isImage || isVideo
+
+        const formattedTime = new Date(msg.send_at || msg.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+
+        // Determine file label (original name or message)
+        const fileLabel = msg.message || (msg.file_url ? msg.file_url.split('-').pop() : "File")
+
+        return (
+            <div className={`message-content-wrapper ${isMedia ? 'media-content' : ''}`}>
+                {msg.message && !msg.file_url && (
+                    <span className="message-item">
+                        <span className='message-text'>{msg.message}</span>
+                        <span className="message-time">{formattedTime}</span>
+                    </span>
+                )}
+                {msg.file_url && (
+                    <div className="message-media">
+                        {isImage ? (
+                            <div className="chat-image-container">
+                                <img
+                                    src={`${BACKEND_URL}${msg.file_url}`}
+                                    alt="Shared image"
+                                    className="chat-image"
+                                    loading="lazy"
+                                    onClick={() => setSelectedImage(`${BACKEND_URL}${msg.file_url}`)}
+                                />
+                            </div>
+                        ) : isVideo ? (
+                            <video
+                                controls
+                                playsInline
+                                className="chat-video"
+                                preload="metadata"
+                                key={msg.file_url}
+                            >
+                                <source
+                                    src={`${BACKEND_URL}${msg.file_url}`}
+                                    type={msg.file_url.endsWith('.mov') || msg.file_url.endsWith('.qt') ? 'video/quicktime' : 'video/mp4'}
+                                />
+                                Your browser does not support the video tag.
+                            </video>
+                        ) : (
+                            <a
+                                href={`${BACKEND_URL}${msg.file_url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="chat-file-link message-item"
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                    <FileText size={20} />
+                                    <span>{fileLabel}</span>
+                                </div>
+                                <span className="message-time">{formattedTime}</span>
+                            </a>
+                        )}
+                        {msg.message && (isImage || isVideo) && (
+                            <div className="media-caption message-item">
+                                <span className="message-text">{msg.message}</span>
+                                <span className="message-time">{formattedTime}</span>
+                            </div>
+                        )}
+                        {!(msg.message && (isImage || isVideo)) && isMedia && (
+                            <span className="message-time media-time-overlay">{formattedTime}</span>
+                        )}
+                    </div>
+                )}
+                {/* {(isImage || (msg.message && !msg.file_url)) && (
+                    <button
+                        className="copy-btn"
+                        onClick={() => handleCopy(msg.id, msg.message, msg.file_url)}
+                        title="Copy message"
+                    >
+                        {copiedId === msg.id ? <Check size={14} color="#4CAF50" /> : <Copy size={14} />}
+                    </button>
+                )} */}
+            </div>
+        )
     }
 
     // For more reliable participant info (especially on empty chats), get from chat list
@@ -133,21 +278,11 @@ const Chats = (props) => {
             <div className="chat-page">
                 {/* Sticky Header */}
                 <div className="chat-header">
-                    <div
-                        className="screen19-thq-depth5-frame0-elm2 cursor-pointer"
-                        onClick={() => {
-                            const targetId = otherUser?.id || otherUser?.user_id;
-                            console.log("Navigating to profile for user:", targetId);
-                            if (targetId) {
-                                history.push(`/profile/${targetId}`);
-                            } else {
-                                alert("Could not find user ID for navigation.");
-                            }
-                        }}
-                        style={{ cursor: "pointer" }}
-                    >
-                        <span className="screen19-thq-text-elm11 click-username">{otherUser.user_name}</span>
+
+                    <div className="screen19-thq-depth5-frame0-elm2">
+                        <span className="screen19-thq-text-elm11">{otherUser.user_name}</span>
                     </div>
+
                     <div className="screen19-thq-depth5-frame0-elm3">
                         <div className="screen19-thq-depth6-frame0-elm1">
                             <div className="screen19-thq-depth7-frame0-elm1">
@@ -159,7 +294,11 @@ const Chats = (props) => {
                                 <span className="screen19-thq-text-elm12">Call</span>
                             </div>
                         </div>
-                        <div className="screen19-thq-depth6-frame1-elm1">
+                        <div
+                            className="screen19-thq-depth6-frame1-elm1 cursor-pointer"
+                            onClick={() => history.push(`/video-call-main?room=${chatId}`)}
+                            style={{ cursor: "pointer" }}
+                        >
                             <div className="screen19-thq-depth7-frame0-elm2">
                                 <div className="screen19-thq-depth8-frame0-elm2">
                                     <img src="/depth9frame02264-msnw.svg" alt="Video" className="screen19-thq-depth9-frame0-elm2" />
@@ -250,10 +389,11 @@ const Chats = (props) => {
                                                         {msg.sender.user_name}
                                                     </span>
                                                 </div>
-                                                <div className="screen19-thq-depth6-frame1-elm2" style={{ height: 'auto', minHeight: 'fit-content' }}>
-                                                    <span className="screen19-thq-text-elm17">
-                                                        {msg.message}
-                                                    </span>
+                                                <div
+                                                    className={`screen19-thq-depth6-frame1-elm2 ${msg.file_url ? 'file-bubble' : ''}`}
+                                                    style={{ height: 'auto', minHeight: 'fit-content' }}
+                                                >
+                                                    {renderMessageContent(msg)}
                                                 </div>
                                             </div>
                                         </div>
@@ -265,10 +405,11 @@ const Chats = (props) => {
                                                         You
                                                     </span>
                                                 </div>
-                                                <div className="screen19-thq-depth6-frame1-elm3" style={{ height: 'auto', minHeight: 'fit-content' }}>
-                                                    <span className="screen19-thq-text-elm22">
-                                                        {msg.message}
-                                                    </span>
+                                                <div
+                                                    className={`screen19-thq-depth6-frame1-elm3 ${msg.file_url ? 'file-bubble' : ''}`}
+                                                    style={{ height: 'auto', minHeight: 'fit-content' }}
+                                                >
+                                                    {renderMessageContent(msg)}
                                                 </div>
                                             </div>
                                             <div
@@ -292,22 +433,53 @@ const Chats = (props) => {
                 <div className="chat-footer">
                     <div className="screen19-thq-depth5-frame0-elm8">
                         <div className="screen19-thq-depth6-frame0-elm6">
-                            <div className="screen19-thq-depth7-frame0-elm4" style={{ flexGrow: 1 }}>
+                            <div className="screen19-thq-depth7-frame0-elm4" style={{ flexGrow: 1, position: 'relative' }}>
+                                <button
+                                    className="attachment-btn"
+                                    onClick={handleFileClick}
+                                    disabled={isUploading}
+                                    title="Attach a file"
+                                >
+                                    <Paperclip size={20} />
+                                </button>
                                 <input
-                                    type="text"
-                                    className="screen19-thq-text-elm34"
-                                    placeholder="Write a message..."
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
+                                <textarea
+                                    className="screen19-thq-text-elm34 chat-input-field"
+                                    placeholder={isUploading ? "Uploading file..." : "Write a message..."}
                                     value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    rows={1}
+                                    onChange={(e) => {
+                                        setNewMessage(e.target.value)
+                                        // Auto-resize height
+                                        e.target.style.height = 'auto'
+                                        e.target.style.height = (e.target.scrollHeight) + 'px'
+                                    }}
+                                    disabled={isUploading}
                                     style={{
                                         width: '100%',
                                         border: 'none',
                                         background: 'transparent',
-                                        outline: 'none'
+                                        outline: 'none',
+                                        paddingLeft: '44px',
+                                        paddingTop: '6px',
+                                        paddingBottom: '6px',
+                                        resize: 'none',
+                                        maxHeight: '120px',
+                                        overflowY: 'auto',
+                                        lineHeight: '20px',
+                                        height: '32px'
                                     }}
-                                    onKeyPress={(e) => {
-                                        if (e.key === 'Enter') {
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault()
                                             handleSendMessage()
+                                            // Reset height
+                                            e.target.style.height = '32px'
                                         }
                                     }}
                                 />
@@ -329,6 +501,18 @@ const Chats = (props) => {
                     </div>
                 </div>
             </div>
+
+            {/* Fullscreen Image Modal */}
+            {selectedImage && (
+                <div className="fullscreen-modal" onClick={() => setSelectedImage(null)}>
+                    <button className="modal-close-btn" onClick={() => setSelectedImage(null)}>
+                        <X size={32} />
+                    </button>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <img src={selectedImage} alt="Fullscreen preview" />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

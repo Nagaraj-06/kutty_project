@@ -16,7 +16,12 @@ async function giveFeedback(req, res, next) {
 // Get feedbacks for a user (defaults to logged-in user)
 async function getFeedbacks(req, res, next) {
   try {
-    const user_id = req.query.userId || req.user.id;
+    const user_id = req.query.userId || req.user?.id;
+    if (!user_id) {
+      const err = new Error("User ID is required");
+      err.statusCode = 400;
+      throw err;
+    }
 
     const feedbacks = await feedbackService.getFeedbacksForUser(user_id);
 

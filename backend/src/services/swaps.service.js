@@ -2,29 +2,49 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // create a swap request
+// Create a swap request
 async function createSwapRequest(user_id, data) {
-  const { request_to, offer_user_skill_id, want_user_skill_id, message } = data;
+  const {
+    request_to,
+    offer_user_skill_id,
+    want_user_skill_id,
+    message,
+    scheduled,
+  } = data;
 
-  // Prevent self-request
+  // 0️⃣ Prevent self request
   if (user_id === request_to) {
     const err = new Error("You cannot send a swap request to yourself.");
     err.statusCode = 400;
     throw err;
   }
 
-  // 1️⃣ Fetch current user offering/wanting
-  const userOffer = await prisma.user_skills.findUnique({
-    where: { id: offer_user_skill_id, user_id: user_id, is_active: true },
+  // 1️⃣ Fetch current user's skills
+  const userOffer = await prisma.user_skills.findFirst({
+    where: {
+      id: offer_user_skill_id,
+      user_id: user_id,
+      skill_type: "OFFERING",
+      is_active: true,
+    },
   });
-  const userWant = await prisma.user_skills.findUnique({
-    where: { id: want_user_skill_id, user_id: user_id, is_active: true },
+
+  const userWant = await prisma.user_skills.findFirst({
+    where: {
+      id: want_user_skill_id,
+      user_id: user_id,
+      skill_type: "WANTED",
+      is_active: true,
+    },
   });
 
-  console.log(data);
+  if (!userOffer || !userWant) {
+    const err = new Error("Invalid skills selected.");
+    err.statusCode = 400;
+    throw err;
+  }
 
-  console.log(userOffer + " " + userWant);
-
-  // 2️⃣ Fetch requested user's skills
+  // 2️⃣ Fetch target user's matching skills
   const targetOffer = await prisma.user_skills.findFirst({
     where: {
       user_id: request_to,
@@ -44,21 +64,82 @@ async function createSwapRequest(user_id, data) {
   });
 
   if (!targetOffer || !targetWant) {
-    throw new Error("Mutual skills do not match. Swap cannot be created.");
+    const err = new Error(
+      "Mutual skills do not match. Swap cannot be created."
+    );
+    err.statusCode = 400;
+    throw err;
   }
 
-  await prisma.skill_swaps.create({
+
+  // 3️⃣ Check for existing swap (both directions)
+  const existingSwap = await prisma.skill_swaps.findFirst({
+    where: {
+      OR: [
+        {
+          request_from: user_id,
+          request_to: request_to,
+          offer_user_skill_id,
+          want_user_skill_id,
+        },
+        // {
+        //   request_from: request_to,
+        //   request_to: user_id,
+        //   offer_user_skill_id: want_user_skill_id,
+        //   want_user_skill_id: offer_user_skill_id,
+        // },
+      ],
+    },
+  });
+
+
+  if (existingSwap) {
+
+    let errorMessage =
+      "A swap request already exists between you for these skills.";
+
+    if (existingSwap.status === "PENDING") {
+      errorMessage =
+        existingSwap.request_from === user_id
+          ? "You have already sent a pending swap request."
+          : "You already have a pending swap request from this user.";
+    }
+
+    if (existingSwap.status === "ACCEPTED") {
+      errorMessage = "You already have an active swap for these skills.";
+    }
+
+    if (existingSwap.status === "REJECTED") {
+      errorMessage =
+        "A previous swap request was rejected. You cannot create a new one yet.";
+    }
+
+    if (existingSwap.status === "COMPLETED") {
+      errorMessage = "You have already completed a swap for these skills.";
+    }
+
+    const err = new Error(errorMessage);
+    err.statusCode = 409;
+    throw err;
+  }
+
+  // 4️⃣ Create swap request
+  return await prisma.skill_swaps.create({
     data: {
       request_from: user_id,
       request_to: request_to,
       offer_user_skill_id: offer_user_skill_id,
       want_user_skill_id: want_user_skill_id,
-      message: message,
-      scheduled: data.scheduled || null,
+      message: message || null,
+      scheduled: scheduled || null,
+      status: "PENDING",
       created_by: user_id,
     },
   });
+
+  return null
 }
+
 
 // Update request status (ACCEPTED/REJECTED)
 
