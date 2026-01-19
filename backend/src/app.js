@@ -6,12 +6,13 @@ const app = express();
 const path = require("path");
 const swaggerDocs = require("./config/swagger");
 const cors = require("cors");
+const { frontendUrl } = require("./config/env");
 
 app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: frontendUrl,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     credentials: true,
   })

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import { useSelector } from 'react-redux'
@@ -26,6 +26,9 @@ const Chats = (props) => {
     const [isUploading, setIsUploading] = useState(false)
     const [copiedId, setCopiedId] = useState(null)
     const [selectedImage, setSelectedImage] = useState(null)
+    const [pendingFile, setPendingFile] = useState(null) // New: for WhatsApp-style caption modal
+    const [fileCaption, setFileCaption] = useState("") // New: caption for the pending file
+    const [previewUrl, setPreviewUrl] = useState(null) // New: local preview URL for images/videos
 
     const messagesEndRef = useRef(null)
     const socketRef = useRef(null)
@@ -81,22 +84,35 @@ const Chats = (props) => {
 
     const isFirstLoad = useRef(true)
 
-    // Handle Escape key to close fullscreen image
+    const closeCaptionModal = React.useCallback(() => {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl)
+        }
+        setPendingFile(null)
+        setPreviewUrl(null)
+        setFileCaption("")
+    }, [previewUrl])
+
+    // Consolidated Escape key handler
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
-                setSelectedImage(null)
+                if (selectedImage) {
+                    setSelectedImage(null)
+                } else if (pendingFile) {
+                    closeCaptionModal()
+                }
             }
         }
 
-        if (selectedImage) {
+        if (selectedImage || pendingFile) {
             window.addEventListener('keydown', handleKeyDown)
         }
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown)
         }
-    }, [selectedImage])
+    }, [selectedImage, pendingFile, closeCaptionModal])
 
     useEffect(() => {
         if (allMessages.length > 0) {
@@ -110,7 +126,7 @@ const Chats = (props) => {
     }, [allMessages])
 
     const handleSendMessage = (content = null, fileUrl = null) => {
-        const messageText = content || newMessage.trim()
+        const messageText = content !== null ? content : newMessage.trim()
         if (!messageText && !fileUrl) return
         if (!user || !chatId) return
 
@@ -136,7 +152,7 @@ const Chats = (props) => {
         }
 
         setAllMessages(prev => [...prev, optimisticMessage])
-        if (!content) setNewMessage("")
+        if (content === null) setNewMessage("")
 
         // Emit to backend
         if (socketRef.current) {
@@ -148,27 +164,54 @@ const Chats = (props) => {
         fileInputRef.current?.click()
     }
 
-    const handleFileChange = async (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0]
         if (!file) return
+        setPendingFile(file)
+        setFileCaption("")
+
+        // Create local preview URL if image or video
+        if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+            setPreviewUrl(URL.createObjectURL(file))
+        } else {
+            setPreviewUrl(null)
+        }
+
+        e.target.value = null // Reset input
+    }
+
+
+    const handleConfirmFileUpload = async () => {
+        if (!pendingFile) return
 
         const formData = new FormData()
-        formData.append('file', file)
+        formData.append('file', pendingFile)
 
         setIsUploading(true)
+        const currentFile = pendingFile
+        const currentCaption = fileCaption
+        const currentPreview = previewUrl
+
+        // Close modal immediately but store local preview for cleanup
+        setPendingFile(null)
+        setFileCaption("")
+        setPreviewUrl(null)
+
         try {
             const response = await uploadChatFile(formData).unwrap()
             if (response.success) {
-                // If there's no text in newMessage, we use original filename as the message content
-                // to preserve the filename for display.
-                handleSendMessage(newMessage || response.data.original_name, response.data.file_url)
+                // Use caption if provided, otherwise filename
+                const finalMessage = currentCaption.trim() || currentFile.name
+                handleSendMessage(finalMessage, response.data.file_url)
             }
         } catch (err) {
             console.error("Upload failed:", err)
             alert("Failed to upload file.")
         } finally {
             setIsUploading(false)
-            e.target.value = null // Reset input
+            if (currentPreview) {
+                URL.revokeObjectURL(currentPreview)
+            }
         }
     }
 
@@ -204,13 +247,14 @@ const Chats = (props) => {
                     <div className="message-media">
                         {isImage ? (
                             <div className="chat-image-container">
-                                <img
-                                    src={`${BACKEND_URL}${msg.file_url}`}
-                                    alt="Shared image"
-                                    className="chat-image"
-                                    loading="lazy"
-                                    onClick={() => setSelectedImage(`${BACKEND_URL}${msg.file_url}`)}
-                                />
+                                <a href={`${BACKEND_URL}${msg.file_url}`} target="_self">
+                                    <img
+                                        src={`${BACKEND_URL}${msg.file_url}`}
+                                        alt="Shared image"
+                                        className="chat-image"
+                                        loading="lazy"
+                                    />
+                                </a>
                             </div>
                         ) : isVideo ? (
                             <video
@@ -229,7 +273,7 @@ const Chats = (props) => {
                         ) : (
                             <a
                                 href={`${BACKEND_URL}${msg.file_url}`}
-                                target="_blank"
+                                target="_self"
                                 rel="noopener noreferrer"
                                 className="chat-file-link message-item"
                             >
@@ -502,7 +546,7 @@ const Chats = (props) => {
                 </div>
             </div>
 
-            {/* Fullscreen Image Modal */}
+            {/* Fullscreen Image Modal - Deprecated but keeping for general usage if needed later */}
             {selectedImage && (
                 <div className="fullscreen-modal" onClick={() => setSelectedImage(null)}>
                     <button className="modal-close-btn" onClick={() => setSelectedImage(null)}>
@@ -510,6 +554,56 @@ const Chats = (props) => {
                     </button>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <img src={selectedImage} alt="Fullscreen preview" />
+                    </div>
+                </div>
+            )}
+
+            {/* WhatsApp-style Caption Modal */}
+            {pendingFile && (
+                <div className="file-caption-modal">
+                    <div className="caption-modal-content">
+                        <div className="caption-modal-header">
+                            <h3>Send Attachment</h3>
+                            <button className="close-caption-btn" onClick={closeCaptionModal}>
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="caption-file-info">
+                            {previewUrl ? (
+                                <div className="caption-preview-container">
+                                    {pendingFile.type.startsWith('image/') ? (
+                                        <img src={previewUrl} alt="Preview" className="caption-preview-image" />
+                                    ) : (
+                                        <video src={previewUrl} className="caption-preview-video" controls />
+                                    )}
+                                </div>
+                            ) : (
+                                <FileText size={48} color="#5b7289" />
+                            )}
+                            <span className="caption-filename">{pendingFile.name}</span>
+                            <span className="caption-filesize">{(pendingFile.size / 1024).toFixed(1)} KB</span>
+                        </div>
+                        <div className="caption-input-wrapper">
+                            <textarea
+                                className="caption-textarea"
+                                placeholder="Add a caption..."
+                                value={fileCaption}
+                                onChange={(e) => setFileCaption(e.target.value)}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="caption-modal-actions">
+                            <button className="caption-cancel-btn" onClick={closeCaptionModal}>
+                                Cancel
+                            </button>
+                            <button
+                                className="caption-send-btn"
+                                onClick={handleConfirmFileUpload}
+                                disabled={isUploading}
+                            >
+                                {isUploading ? "Uploading..." : "Send"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
