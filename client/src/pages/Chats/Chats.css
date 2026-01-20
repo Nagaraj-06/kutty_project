@@ -1224,3 +1224,144 @@
     height: auto;
     object-fit: contain;
 }
+
+/* ========== RESPONSIVE CSS ========== */
+
+/* Media Query for Tablet (768px) */
+@media screen and (max-width: 768px) {
+    .screen19-thq-depth3-frame1-elm {
+        width: 100%;
+        max-width: 960px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .screen19-thq-depth5-frame0-elm2 {
+        display: flex;
+        /* Show user name */
+        width: auto;
+        /* Flexible width */
+        flex-grow: 1;
+        /* Take available space */
+        min-width: 0;
+        /* Allow shrinking */
+    }
+
+    /* Wrap text to prevent overflow */
+    .screen19-thq-text-elm11 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: clamp(20px, 4vw, 24px);
+        /* Smaller font */
+    }
+
+    .screen19-thq-depth5-frame0-elm8 {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Media Query for Phones (480px) */
+@media screen and (max-width: 480px) {
+    .page-wrapper {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Chat Header Optimizations */
+    .chat-header .screen19-thq-depth5-frame0-elm3 {
+        gap: 4px;
+        /* Tighter gap */
+    }
+
+    /* Hide button labels -> Icon Only */
+    .screen19-thq-depth7-frame1-elm1,
+    .screen19-thq-depth7-frame1-elm2,
+    .screen19-thq-depth7-frame1-elm3 {
+        display: none;
+    }
+
+    /* Compact Buttons */
+    .screen19-thq-depth6-frame0-elm1,
+    .screen19-thq-depth6-frame1-elm1,
+    .screen19-thq-depth6-frame2-elm {
+        height: 48px;
+        width: 48px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 24px;
+    }
+
+    .screen19-thq-depth7-frame0-elm1,
+    .screen19-thq-depth7-frame0-elm2,
+    .screen19-thq-depth7-frame0-elm3 {
+        padding: 0;
+        background-color: transparent;
+        border-radius: 0;
+    }
+
+    /* Message Bubbles */
+    .screen19-thq-depth6-frame1-elm3,
+    .screen19-thq-depth6-frame1-elm5 {
+        padding: 8px 12px;
+        max-width: 85%;
+    }
+
+    /* Avatars */
+    .screen19-thq-depth5-frame1-elm2,
+    .screen19-thq-depth5-frame0-elm6 {
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
+    }
+
+    /* Input Area */
+    .screen19-thq-depth4-frame10-elm {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .screen19-thq-depth7-frame0-elm4 {
+        padding: 6px 12px;
+    }
+
+    /* Header */
+    .screen19-thq-depth4-frame2-elm {
+        padding: 12px 16px;
+    }
+
+    .screen19-thq-text-elm15 {
+        font-size: 16px;
+    }
+}
+
+/* Media Query for Small common Android (360px) */
+@media screen and (max-width: 360px) {
+
+    .screen19-thq-depth4-frame3-elm,
+    .screen19-thq-depth4-frame6-elm {
+        padding: 12px 8px;
+    }
+
+    .screen19-thq-depth9-frame1-elm {
+        width: auto;
+        padding: 0 12px;
+    }
+}
+
+/* Media Query for Smallest Screens (320px) */
+@media screen and (max-width: 320px) {
+
+    .screen19-thq-text-elm22,
+    .screen19-thq-text-elm31 {
+        font-size: 14px;
+    }
+}
+
+/* Desktop Target (1024px+) - Maintaining precise desktop design */
+@media screen and (min-width: 1024px) {
+    .screen19-thq-depth5-frame0-elm8 {
+        width: 928px;
+    }
+}

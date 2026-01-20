@@ -77,8 +77,9 @@
 }
 
 .skillconnect-wrapper {
-  padding: 20px 160px 100px;
+  padding: 20px 5vw 100px;
   width: 100%;
+  max-width: 1280px;
 }
 
 .search-container {
@@ -137,13 +138,12 @@
 .screen1-thq-text-elm12 {
   color: rgba(73, 114, 155, 1);
   height: auto;
-  font-size: 16px;
+  font-size: clamp(14px, 4vw, 16px);
   font-style: Regular;
   text-align: left;
   font-family: Inter;
   font-weight: 400;
-  line-height: 24px;
-  font-stretch: normal;
+  line-height: normal;
   text-decoration: none;
 }
 
@@ -203,7 +203,6 @@
   align-items: flex-start;
   flex-direction: column;
   max-height: 100vh;
-  display: flex;
   overflow-y: auto;
   overflow-x: hidden;
   flex-grow: 1;
@@ -820,6 +819,201 @@
   font-style: normal;
   font-weight: 500;
   line-height: 24px;
+}
+
+/* Media Query for Tablet (768px) */
+@media screen and (max-width: 768px) {
+  .skillconnect-wrapper {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .screen1-thq-depth5-frame0-elm3 {
+    justify-content: center;
+    gap: 16px;
+  }
+}
+
+/* Media Query for Phones (480px) - Show 2 cards per row */
+@media screen and (max-width: 480px) {
+  .search-container {
+    padding: 12px 0;
+  }
+
+  .availability-filter {
+    padding: 8px 0;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .screen1-thq-depth5-frame0-elm2 {
+    padding: 0 8px;
+  }
+
+  .screen1-thq-depth5-frame0-elm3 {
+    padding: 0;
+    gap: 12px;
+  }
+
+  /* Reduce availability filter button size */
+  .screen1-thq-depth5-frame0-elm2 {
+    height: 28px;
+    padding: 0 6px 0 12px;
+    gap: 6px;
+  }
+
+  .screen1-thq-text-elm13 {
+    font-size: 12px;
+  }
+
+  .screen1-thq-depth3-frame1-elm {
+    height: 28px;
+    padding: 0 6px;
+  }
+
+  .screen1-thq-text-elm11 {
+    font-size: 12px;
+  }
+
+  /* User card grid - 2 cards per row */
+  .user-card {
+    width: calc(50% - 6px);
+    height: auto;
+    min-height: 200px;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  /* Reduce profile image size */
+  .screen1-thq-depth8-frame0-elm11,
+  .screen1-thq-depth8-frame0-elm13 {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+  }
+
+  /* Adjust text container width */
+  .screen1-thq-depth7-frame1-elm2,
+  .screen1-thq-depth7-frame1-elm3 {
+    width: 100%;
+  }
+
+  /* Reduce font sizes */
+  .screen1-thq-text-elm14,
+  .screen1-thq-text-elm16 {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .screen1-thq-text-elm15,
+  .screen1-thq-text-elm17 {
+    font-size: 12px;
+    line-height: 16px;
+    -webkit-line-clamp: 2;
+    min-height: 32px;
+  }
+
+  /* Reduce padding in card sections */
+  .screen1-thq-depth7-frame0-elm12,
+  .screen1-thq-depth7-frame0-elm13 {
+    padding: 0 8px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Center the profile image container */
+  .screen1-thq-depth8-frame0-elm11,
+  .screen1-thq-depth8-frame0-elm13 {
+    margin: 0 auto;
+  }
+}
+
+/* Media Query for Small common Android (360px) - Show 2 cards per row (more compact) */
+@media screen and (max-width: 360px) {
+  .screen1-thq-text-elm10 {
+    font-size: 16px;
+  }
+
+  /* Keep 2 cards per row but make them more compact */
+  .user-card {
+    width: calc(50% - 6px);
+    min-height: 180px;
+    padding: 6px;
+    gap: 6px;
+  }
+
+  /* Further reduce profile image */
+  .screen1-thq-depth8-frame0-elm11,
+  .screen1-thq-depth8-frame0-elm13 {
+    width: 70px;
+    height: 70px;
+    border-radius: 35px;
+  }
+
+  /* Smaller fonts */
+  .screen1-thq-text-elm14,
+  .screen1-thq-text-elm16 {
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .screen1-thq-text-elm15,
+  .screen1-thq-text-elm17 {
+    font-size: 11px;
+    line-height: 14px;
+    min-height: 28px;
+  }
+}
+
+/* Media Query for Smallest Screens (320px) - Show 2 cards per row (most compact) */
+@media screen and (max-width: 320px) {
+  .screen1-thq-depth3-frame1-elm {
+    width: 70px;
+    padding: 0 8px;
+  }
+
+  .screen1-thq-text-elm11 {
+    font-size: 12px;
+  }
+
+  /* Ultra compact 2 cards per row */
+  .user-card {
+    width: calc(50% - 4px);
+    min-height: 170px;
+    padding: 6px;
+    gap: 4px;
+  }
+
+  /* Smallest profile image */
+  .screen1-thq-depth8-frame0-elm11,
+  .screen1-thq-depth8-frame0-elm13 {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+  }
+
+  /* Minimal fonts */
+  .screen1-thq-text-elm14,
+  .screen1-thq-text-elm16 {
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  .screen1-thq-text-elm15,
+  .screen1-thq-text-elm17 {
+    font-size: 10px;
+    line-height: 13px;
+    -webkit-line-clamp: 1;
+    min-height: 13px;
+  }
+}
+
+/* Desktop Target (1024px+) - Maintaining precise desktop design */
+@media screen and (min-width: 1024px) {
+  .skillconnect-wrapper {
+    padding-left: 160px;
+    padding-right: 160px;
+  }
 }
 
 /* Search input */

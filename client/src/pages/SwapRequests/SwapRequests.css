@@ -1369,3 +1369,173 @@
 .message-text.message-expanded+.read-more-link {
     display: inline-block;
 }
+
+/* ========== RESPONSIVE CSS ========== */
+
+/* Media Query for Tablet (768px) */
+@media screen and (max-width: 768px) {
+    .screen17-thq-depth2-frame1-elm {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .screen17-thq-depth3-frame0-elm2 {
+        width: 100%;
+        max-width: 960px;
+    }
+
+    .screen17-thq-depth5-frame0-elm10 {
+        width: 100%;
+        max-width: 288px;
+    }
+
+    .screen17-thq-text-elm11 {
+        font-size: clamp(24px, 5vw, 28px);
+    }
+}
+
+/* Media Query for Phones (480px) */
+@media screen and (max-width: 480px) {
+    .screen17-thq-depth4-frame0-elm3 {
+        padding: 16px 8px;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Fix request item container - Inline Status & Actions */
+    .screen17-thq-depth4-frame3-elm {
+        padding: 12px 8px;
+        flex-direction: row;
+        /* Allow row layout */
+        flex-wrap: wrap;
+        /* Wrap content */
+        gap: 12px;
+        align-items: center;
+    }
+
+    /* Force User Info to full width (Row 1) */
+    .screen17-thq-depth5-frame0-elm13 {
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    /* Status Dot Container (Row 2 - Left) */
+    .screen17-thq-depth5-frame1-elm2 {
+        width: auto;
+        height: auto;
+        min-height: auto;
+        margin-right: auto;
+        /* Push actions to right */
+    }
+
+    /* Actions Container (Row 2 - Right) */
+    .screen17-thq-depth4-frame4-elm {
+        width: auto;
+        padding: 0;
+        /* Remove excess padding */
+        justify-content: flex-end;
+    }
+
+    .screen17-thq-depth5-frame0-elm10 {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .screen17-thq-depth5-frame0-elm11,
+    .screen17-thq-depth5-frame0-elm12 {
+        width: 100%;
+    }
+
+    .screen17-thq-depth6-frame1-elm2 {
+        width: 100%;
+    }
+
+    .screen17-thq-depth6-frame0-elm12 {
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+    }
+
+    .screen17-thq-text-elm11 {
+        font-size: 22px;
+    }
+
+    .screen17-thq-text-elm14 {
+        font-size: 14px;
+    }
+
+    .screen17-thq-text-elm15 {
+        font-size: 13px;
+    }
+
+    /* Reduce height for profile container on mobile */
+    .screen17-thq-depth5-frame1-elm2 {
+        height: auto;
+        min-height: 10px;
+    }
+
+    .screen17-thq-depth6-frame0-elm15 {
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+    }
+
+    /* Reduce height/padding for actions container */
+    .screen17-thq-depth5-frame0-elm14 {
+        padding: 0 16px 8px 16px;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    .screen17-thq-depth6-frame1-elm3,
+    .screen17-thq-depth6-frame0-elm14 {
+        height: 36px;
+    }
+}
+
+/* Media Query for Small common Android (360px) */
+@media screen and (max-width: 360px) {
+    .screen17-thq-text-elm11 {
+        font-size: 20px;
+    }
+
+    .screen17-thq-depth4-frame4-elm {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .screen17-thq-depth5-frame0-elm14 {
+        justify-content: center;
+        padding-bottom: 8px;
+    }
+}
+
+/* Media Query for Smallest Screens (320px) */
+@media screen and (max-width: 320px) {
+    .screen17-thq-text-elm11 {
+        font-size: 18px;
+    }
+
+    .screen17-thq-depth6-frame0-elm12 {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+    }
+}
+
+/* Desktop Target (1024px+) - Maintaining precise desktop design */
+@media screen and (min-width: 1024px) {
+    .screen17-thq-depth2-frame1-elm {
+        padding-left: 160px;
+        padding-right: 160px;
+    }
+
+    .screen17-thq-depth3-frame0-elm2 {
+        width: 960px;
+    }
+
+    .screen17-thq-depth5-frame0-elm10 {
+        width: 288px;
+    }
+}

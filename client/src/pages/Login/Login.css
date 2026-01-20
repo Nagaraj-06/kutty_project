@@ -1,8 +1,8 @@
 .screen2-container1 {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   display: flex;
-  overflow: auto;
+  overflow-x: hidden;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -10,13 +10,12 @@
 
 .login-wrapper {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 0;
-  overflow: hidden;
+  padding: 40px 16px;
   flex-shrink: 0;
 }
 
@@ -31,14 +30,13 @@
 .screen2-thq-text-elm3 {
   color: rgba(12, 20, 28, 1);
   height: auto;
-  font-size: 28px;
+  font-size: clamp(24px, 5vw, 28px);
   align-self: stretch;
   font-style: Bold;
   text-align: center;
   font-family: Inter;
   font-weight: 700;
-  line-height: 35px;
-  font-stretch: normal;
+  line-height: normal;
   text-decoration: none;
 }
 
@@ -46,12 +44,14 @@
   gap: 16px;
   display: flex;
   padding: 12px 16px;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  width: 100%;
+  max-width: 480px;
+  justify-content: center;
 }
 
 .screen2-thq-depth5-frame0-elm2 {
-  width: 448px;
+  width: 100%;
+  max-width: 448px;
   display: flex;
   flex-grow: 1;
   align-items: flex-start;
@@ -109,12 +109,14 @@
   gap: 16px;
   display: flex;
   padding: 12px 16px;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  width: 100%;
+  max-width: 480px;
+  justify-content: center;
 }
 
 .screen2-thq-depth5-frame0-elm3 {
-  width: 448px;
+  width: 100%;
+  max-width: 448px;
   display: flex;
   flex-grow: 1;
   align-items: flex-start;
@@ -169,24 +171,21 @@
 }
 
 .screen2-thq-depth4-frame3-elm {
-  gap: 10px;
-  width: 480px;
-  height: 29px;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
   display: flex;
   padding: 4px 16px;
   position: relative;
   align-items: center;
   flex-shrink: 0;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .screen2-thq-text-elm8 {
-  top: 4px;
-  left: 16px;
   color: rgba(73, 114, 155, 1);
-  width: 928px;
+  width: auto;
   height: auto;
-  position: absolute;
   font-size: 14px;
   font-style: Regular;
   text-align: left;
@@ -200,14 +199,16 @@
 .screen2-thq-depth4-frame4-elm {
   display: flex;
   padding: 12px 16px;
-  align-self: stretch;
+  width: 100%;
+  max-width: 480px;
   align-items: center;
   flex-shrink: 0;
   justify-content: center;
 }
 
 .screen2-thq-depth5-frame0-elm4 {
-  width: 448px;
+  width: 100%;
+  max-width: 448px;
   height: 40px;
   display: flex;
   padding: 0 16px;
@@ -265,4 +266,87 @@
   -webkit-box-shadow: 0 0 0 1000px #e8edf4 inset !important;
   -webkit-text-fill-color: rgba(12, 20, 28, 1) !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Media Query for Tablet (768px) */
+@media screen and (max-width: 768px) {
+
+  .screen2-thq-depth4-frame1-elm2,
+  .screen2-thq-depth4-frame2-elm,
+  .screen2-thq-depth4-frame4-elm {
+    padding: 12px 16px;
+  }
+
+  .screen2-text-input {
+    font-size: clamp(14px, 4vw, 16px);
+    padding: clamp(10px, 3.5vw, 16px);
+  }
+}
+
+/* Media Query for Phones (480px) */
+@media screen and (max-width: 480px) {
+  .screen2-text-input {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+/* Media Query for iPhone / Android (375px - 414px) */
+@media screen and (max-width: 414px) {
+  .login-wrapper {
+    padding: 20px 8px;
+  }
+
+  .screen2-thq-text-elm3 {
+    font-size: 24px;
+  }
+}
+
+/* Media Query for Small common Android (360px) */
+@media screen and (max-width: 360px) {
+
+  .screen2-thq-depth4-frame1-elm2,
+  .screen2-thq-depth4-frame2-elm,
+  .screen2-thq-depth4-frame4-elm {
+    padding: 8px 12px;
+  }
+
+  .screen2-text-input {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+/* Media Query for Smallest Screens (320px) */
+@media screen and (max-width: 320px) {
+  .screen2-thq-text-elm3 {
+    font-size: 22px;
+  }
+
+  .screen2-thq-depth5-frame0-elm4 {
+    padding: 0 10px;
+  }
+
+  .screen2-text-input {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+}
+
+/* Desktop Target (1024px+) - Maintaining precise desktop design */
+@media screen and (min-width: 1024px) {
+
+  .screen2-thq-depth5-frame0-elm2,
+  .screen2-thq-depth5-frame0-elm3,
+  .screen2-thq-depth5-frame0-elm4 {
+    width: 448px;
+  }
+
+  .screen2-thq-depth4-frame3-elm {
+    width: 480px;
+  }
+
+  .login-wrapper {
+    width: auto;
+  }
 }

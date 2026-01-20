@@ -1,14 +1,14 @@
 .screen14-container1 {
     width: 100%;
     display: flex;
-    overflow: auto;
-    min-height: 100vh;
+    overflow: visible;
+    min-height: auto;
     align-items: center;
     flex-direction: column;
 }
 
 .dashboard-wrapper {
-    padding: 20px 160px 100px;
+    padding: 20px 5vw 100px;
     width: 100%;
 }
 
@@ -99,9 +99,9 @@
 
 .page-content {
     width: 100%;
-    height: 100%;
+    min-height: auto;
     display: flex;
-    overflow: hidden;
+    overflow: visible;
     flex-grow: 1;
     flex-shrink: 0;
     flex-direction: column;
@@ -126,7 +126,8 @@
 }
 
 .screen14-thq-depth6-frame0-elm1 {
-    width: 288px;
+    width: 100%;
+    max-width: 288px;
     display: flex;
     align-items: flex-start;
     flex-shrink: 0;
@@ -149,7 +150,8 @@
 }
 
 .screen14-thq-depth6-frame1-elm1 {
-    width: 288px;
+    width: 100%;
+    max-width: 288px;
     display: flex;
     align-items: flex-start;
     flex-shrink: 0;
@@ -796,6 +798,124 @@
 
 .dashboard-tab-active {
     color: black !important;
+}
+
+/* Media Query for Tablet (768px) */
+@media screen and (max-width: 768px) {
+    .dashboard-wrapper {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .screen14-thq-text-elm14 {
+        font-size: 28px;
+        line-height: normal;
+    }
+
+    .screen14-thq-depth5-frame0-elm4 {
+        gap: 16px;
+        padding: 0 8px;
+        overflow-x: auto;
+    }
+
+    /* Reduce general font sizes */
+    .screen14-thq-text-elm11,
+    .screen14-thq-text-elm12,
+    .screen14-thq-text-elm13 {
+        font-size: 13px;
+        line-height: 18px;
+    }
+
+    .screen14-thq-text-elm15 {
+        font-size: 13px;
+        line-height: 18px;
+    }
+}
+
+/* Media Query for Phones (480px) */
+@media screen and (max-width: 480px) {
+    .screen14-thq-depth4-frame0-elm2 {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .screen14-thq-depth5-frame0-elm5,
+    .screen14-thq-depth5-frame0-elm6 {
+        flex-direction: column;
+    }
+
+    .screen14-thq-depth6-frame1-elm3,
+    .screen14-thq-depth6-frame1-elm4 {
+        width: 100%;
+        height: 150px;
+    }
+
+    /* Further reduce font sizes */
+    .screen14-thq-text-elm14 {
+        font-size: 24px;
+        line-height: 30px;
+    }
+
+    .screen14-thq-text-elm11,
+    .screen14-thq-text-elm12,
+    .screen14-thq-text-elm13,
+    .screen14-thq-text-elm15 {
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    /* Reduce tab font sizes */
+    .screen14-thq-depth6-frame0-elm2,
+    .screen14-thq-depth6-frame1-elm2,
+    .screen14-thq-depth6-frame2-elm2 {
+        font-size: 12px;
+    }
+}
+
+/* Media Query for Small common Android (360px) */
+@media screen and (max-width: 360px) {
+    .screen14-thq-text-elm14 {
+        font-size: 22px;
+        line-height: 28px;
+    }
+
+    .screen14-thq-depth6-frame1-elm2 {
+        padding: 12px 0;
+    }
+
+    /* Smaller fonts for compact screens */
+    .screen14-thq-text-elm11,
+    .screen14-thq-text-elm12,
+    .screen14-thq-text-elm13,
+    .screen14-thq-text-elm15 {
+        font-size: 11px;
+        line-height: 15px;
+    }
+}
+
+/* Media Query for Smallest Screens (320px) */
+@media screen and (max-width: 320px) {
+    .screen14-thq-text-elm14 {
+        font-size: 20px;
+        line-height: 26px;
+    }
+
+    /* Minimal font sizes */
+    .screen14-thq-text-elm11,
+    .screen14-thq-text-elm12,
+    .screen14-thq-text-elm13,
+    .screen14-thq-text-elm15 {
+        font-size: 10px;
+        line-height: 14px;
+    }
+}
+
+/* Desktop Target (1024px+) - Maintaining precise desktop design */
+@media screen and (min-width: 1024px) {
+    .dashboard-wrapper {
+        padding-left: 160px;
+        padding-right: 160px;
+    }
 }
 
 .dashboard-tab-inactive {

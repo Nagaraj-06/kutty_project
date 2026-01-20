@@ -1318,3 +1318,124 @@
   background-color: #0b6ed0;
   box-shadow: 0 4px 6px rgba(12, 127, 242, 0.2);
 }
+
+/* ========== RESPONSIVE CSS ========== */
+
+/* Media Query for Tablet (768px) */
+@media screen and (max-width: 768px) {
+  .profile-page {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .screen6-thq-depth5-frame0-elm5 {
+    width: 100%;
+    max-width: 928px;
+  }
+
+  .screen6-thq-depth7-frame0-elm2,
+  .screen6-thq-depth7-frame0-elm3 {
+    width: 100%;
+    max-width: 860px;
+  }
+
+  .user-profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .screen6-thq-text-elm13 {
+    font-size: clamp(24px, 5vw, 28px);
+  }
+
+  .screen6-thq-text-elm15 {
+    font-size: 14px;
+  }
+}
+
+/* Media Query for Phones (480px) */
+@media screen and (max-width: 480px) {
+
+  .screen6-thq-depth4-frame0-elm2,
+  .user-profile-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .screen6-thq-depth7-frame0-elm1 {
+    width: 100px;
+    height: 100px;
+  }
+
+  .screen6-thq-text-elm15 {
+    font-size: clamp(16px, 4vw, 18px);
+  }
+
+  .screen6-thq-text-elm13 {
+    font-size: 22px;
+  }
+
+  /* Reduce input/textarea font sizes */
+  .screen6-input,
+  .screen6-textarea {
+    font-size: clamp(14px, 3.5vw, 16px);
+    padding: clamp(10px, 3vw, 12px);
+  }
+}
+
+/* Media Query for Small common Android (360px) */
+@media screen and (max-width: 360px) {
+  .screen6-thq-text-elm13 {
+    font-size: 20px;
+  }
+
+  .screen6-thq-depth4-frame7-elm {
+    padding: 12px 0;
+  }
+
+  .profile-page {
+    padding: 16px 8px 100px;
+  }
+
+  .screen6-input,
+  .screen6-textarea {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+/* Media Query for Smallest Screens (320px) */
+@media screen and (max-width: 320px) {
+  .screen6-thq-text-elm13 {
+    font-size: 18px;
+  }
+
+  .screen6-thq-depth7-frame0-elm1 {
+    width: 80px;
+    height: 80px;
+  }
+
+  .screen6-input,
+  .screen6-textarea {
+    font-size: 13px;
+    padding: 8px;
+  }
+}
+
+/* Desktop Target (1024px+) - Maintaining precise desktop design */
+@media screen and (min-width: 1024px) {
+  .profile-page {
+    padding-left: 160px;
+    padding-right: 160px;
+  }
+
+  .screen6-thq-depth5-frame0-elm5 {
+    width: 928px;
+  }
+
+  .screen6-thq-depth7-frame0-elm2,
+  .screen6-thq-depth7-frame0-elm3 {
+    width: 860px;
+  }
+}

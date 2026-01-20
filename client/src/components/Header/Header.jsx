@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, selectCurrentUser, selectIsAuthenticated } from '../../store/slices/authSlice';
 import { resetFilters } from '../../store/slices/filtersSlice';
-import { LogOut } from 'lucide-react';
+import { LogOut, Compass, LayoutDashboard, MessageSquare, Repeat, LogIn, UserPlus } from 'lucide-react';
 import './Header.css';
 import { getImageUrl } from '../../utils/imageUtils';
 import defaultProfilePic from '../../assets/images/default-profile-pic.png';
@@ -48,11 +48,14 @@ const Header = () => {
                 <div className="header-right">
                     {isAuthenticated ? (
                         <>
-                            <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/') ? 'active' : ''}`}
+                            <div
+                                className={`screen18-thq-depth4-frame1-elm2 ${isActive('/') ? 'active' : ''}`}
                                 onClick={() => navigate('/')}
                                 style={{ cursor: 'pointer' }}
+                                title="Explore"
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">
+                                    <Compass size={18} />
                                     <span className="screen18-thq-text-elm12">Explore</span>
                                 </div>
                             </div>
@@ -60,8 +63,10 @@ const Header = () => {
                             <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/dashboard') ? 'active' : ''}`}
                                 onClick={() => navigate('/dashboard')}
                                 style={{ cursor: 'pointer' }}
+                                title="Dashboard"
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12" >
+                                    <LayoutDashboard size={18} />
                                     <span className="screen18-thq-text-elm12">Dashboard</span>
                                 </div>
                             </div>
@@ -69,8 +74,10 @@ const Header = () => {
                             <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/messages') ? 'active' : ''}`}
                                 onClick={() => navigate('/messages')}
                                 style={{ cursor: 'pointer' }}
+                                title="Messages"
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">
+                                    <MessageSquare size={18} />
                                     <span className="screen18-thq-text-elm12">Messages</span>
                                 </div>
                             </div>
@@ -78,8 +85,10 @@ const Header = () => {
                             <div className={`screen18-thq-depth4-frame1-elm2 ${isActive('/swap-requests') ? 'active' : ''}`}
                                 onClick={() => navigate('/swap-requests')}
                                 style={{ cursor: 'pointer' }}
+                                title="Swap Requests"
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">
+                                    <Repeat size={18} />
                                     <span className="screen18-thq-text-elm12">Swap Requests</span>
                                 </div>
                             </div>
@@ -106,6 +115,7 @@ const Header = () => {
                                 style={{ cursor: 'pointer' }}
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">
+                                    <Compass size={18} />
                                     <span className="screen18-thq-text-elm12">Explore</span>
                                 </div>
                             </div>
@@ -113,8 +123,10 @@ const Header = () => {
                                 className={`screen18-thq-depth4-frame1-elm2 ${isActive('/login') ? 'active' : ''}`}
                                 onClick={() => navigate('/login')}
                                 style={{ cursor: 'pointer' }}
+                                title="Login"
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">
+                                    <LogIn size={18} />
                                     <span className="screen18-thq-text-elm12">Login</span>
                                 </div>
                             </div>
@@ -122,8 +134,10 @@ const Header = () => {
                                 className={`screen18-thq-depth4-frame1-elm2 ${isActive('/signin') ? 'active' : ''}`}
                                 onClick={() => navigate('/signin')}
                                 style={{ cursor: 'pointer' }}
+                                title="Sign Up"
                             >
                                 <div className="screen18-thq-depth5-frame0-elm12">
+                                    <UserPlus size={18} />
                                     <span className="screen18-thq-text-elm12">Sign Up</span>
                                 </div>
                             </div>

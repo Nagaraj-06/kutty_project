@@ -164,7 +164,13 @@ const VideoCallMain = () => {
         }
         if (socketInstance.current) socketInstance.current.disconnect();
         if (peerInstance.current) peerInstance.current.destroy();
-        history.push('/'); // Go home or back
+
+        // Navigate back to the specific chat room
+        if (roomId && roomId !== 'default-room') {
+            history.push(`/messages/${roomId}`);
+        } else {
+            history.push('/');
+        }
     };
 
     return (

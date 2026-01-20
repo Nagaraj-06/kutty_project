@@ -388,3 +388,107 @@
 .reaction-button:hover {
     transform: scale(1.1);
 }
+
+/* ========== RESPONSIVE CSS ========== */
+
+/* Media Query for Mobile (≤ 480px) */
+@media screen and (max-width: 480px) {
+    .video-call-main-container {
+        padding: 0;
+        /* Maximize space */
+    }
+
+    .remote-video-container {
+        border-radius: 0;
+        /* Full screen feel */
+    }
+
+    /* Header Compactness */
+    .video-call-header {
+        top: 1rem;
+        left: 1rem;
+        right: 1rem;
+        padding: 0;
+    }
+
+    .header-left {
+        gap: 0.5rem;
+    }
+
+    .recording-badge,
+    .connection-badge {
+        padding: 0.4rem 0.6rem;
+    }
+
+    .recording-time,
+    .connection-text {
+        font-size: 0.7rem;
+    }
+
+    .header-right {
+        gap: 0.5rem;
+    }
+
+    .user-avatar {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    /* Loal Video PiP - Smaller */
+    .local-video-pip {
+        width: 8rem;
+        height: 10rem;
+        /* Portrait slightly */
+        bottom: 6rem;
+        /* Above controls */
+        right: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    /* Controls */
+    .control-toolbar {
+        bottom: 1.5rem;
+        width: 90%;
+        gap: 0;
+        justify-content: center;
+    }
+
+    .toolbar-panel {
+        width: 100%;
+        justify-content: space-around;
+        padding: 0.4rem;
+    }
+
+    .control-button {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .control-button .material-icons {
+        font-size: 1.25rem;
+    }
+
+    .end-call-button {
+        padding: 0 1rem;
+        height: 2.5rem;
+    }
+
+    /* Remote User Badge */
+    .remote-user-badge {
+        bottom: 6rem;
+        left: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .remote-user-name {
+        font-size: 0.8rem;
+    }
+}
+
+/* Tablet / Landscape Mobile */
+@media screen and (max-width: 768px) {
+    .local-video-pip {
+        bottom: 6rem;
+        /* Ensure it doesn't overlap controls */
+    }
+}

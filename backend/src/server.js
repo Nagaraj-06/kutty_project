@@ -2,7 +2,7 @@
 const http = require("http");
 const app = require("./app");
 const { connectDB } = require("./config/db");
-const { host, port } = require("./config/env");
+const { host, port, frontendUrl } = require("./config/env");
 const { setupSocket } = require("./socket");
 const { Server } = require("socket.io");
 
@@ -15,7 +15,7 @@ async function startServer() {
   // Initialize Socket.IO
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: frontendUrl,
       methods: ["GET", "POST"],
       credentials: true,
     },
