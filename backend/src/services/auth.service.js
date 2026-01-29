@@ -151,17 +151,17 @@ async function loginUser({ email, password }) {
     throw err;
   }
 
+  if (!user.verified) {
+    const err = new Error("Please verify your email address before logging in.");
+    err.statusCode = 403;
+    throw err;
+  }
+
   const validPassword = await bcrypt.compare(password, user.password_hash);
 
   if (!validPassword) {
     const err = new Error("Invalid email or password");
     err.statusCode = 401;
-    throw err;
-  }
-
-  if (!user.verified) {
-    const err = new Error("Please verify your email address before logging in.");
-    err.statusCode = 403;
     throw err;
   }
 
