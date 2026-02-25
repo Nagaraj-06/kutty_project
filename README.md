@@ -31,7 +31,7 @@
 
 *An intelligent, real-time platform engineered for seamless skill discovery, verified knowledge exchange, and resilient peer-to-peer communication.*
 
-[🚀 **Live Demo**](http://skill-swap-app.duckdns.org:8080)
+[🚀 **Live Demo**](https://kutty-project.vercel.app/)
 
 </div>
 
@@ -81,7 +81,7 @@
 ### ⚙️ Core Technologies
 | **Frontend** | **Backend** | **Database** | **Real-time** | **Auth** |
 | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" width="60"> | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/socketio/socketio-original-wordmark.svg" width="60" style="background:white;border-radius:6px;"> | <img src="https://jwt.io/img/pic_logo.svg" width="60"> |
+| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" width="60"> | <img src="https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white" height="30"> | <img src="https://jwt.io/img/pic_logo.svg" width="60"> |
 | **React 18 & Redux** | **Node.js & Express** | **PostgreSQL (Prisma)** | **Socket.io** | **JWT / Google OAuth** |
 
 ### 🛠️ Specialized Tools
