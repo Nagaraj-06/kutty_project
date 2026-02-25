@@ -23,7 +23,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/Architecture-BFF%20%2B%20WebSockets-7C3AED?style=for-the-badge&logo=socket.io&logoColor=white" />
-  <img src="https://img.shields.io/badge/Communication-P2P%20PeerJS-FF9900?style=for-the-badge&logo=webrtc&logoColor=white" />
+  <img src="https://img.shields.io/badge/Communication-Socket.io%20WebSockets-FF9900?style=for-the-badge&logo=socket.io&logoColor=white" />
   <img src="https://img.shields.io/badge/Status-Active%20Development-22c55e?style=for-the-badge&logo=github&logoColor=white" />
 </p>
 
@@ -68,7 +68,7 @@
 
 - **🏗️ Smart Matching** — Discover users based on "Offering" vs "Wanted" skill sets.
 - **⚡ Live Collaboration** — Real-time synchronization during swaps via **Socket.io**.
-- **📹 P2P Video Calls** — Integrated peer-to-peer video streaming powered by **PeerJS (WebRTC)**.
+- **💬 Live Messaging** — WebSocket-powered chat supporting real-time messaging and file transfers.
 - **🛡️ Verified Skills** — Integrated assessment module to validate expertise through testing.
 - **📈 Global State** — High-performance data fetching and UI consistency with **Redux Toolkit**.
 - **🔐 Enterprise Security** — Joi validation, rate limiting, and secure HTTP-only cookie management.
@@ -79,15 +79,15 @@
 ## 🛠️ Tech Stack
 
 ### ⚙️ Core Technologies
-| **Frontend** | **Backend** | **Database** | **Real-time** | **P2P** |
+| **Frontend** | **Backend** | **Database** | **Real-time** | **Auth** |
 | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/socketio/socketio-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/webrtc/webrtc-plain.svg" width="60"> |
-| **React 18 & Redux** | **Node.js & Express** | **PostgreSQL (Prisma)** | **Socket.io** | **PeerJS (WebRTC)** |
+| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" width="60"> | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/socketio/socketio-original-wordmark.svg" width="60" style="background:white;border-radius:6px;"> | <img src="https://jwt.io/img/pic_logo.svg" width="60"> |
+| **React 18 & Redux** | **Node.js & Express** | **PostgreSQL (Prisma)** | **Socket.io** | **JWT / Google OAuth** |
 
 ### 🛠️ Specialized Tools
 | **ORM** | **Validation** | **State Management** | **Security / JWT** | **Documentation** |
 | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/prisma/prisma-original.svg" width="60"> | <img src="https://raw.githubusercontent.com/hapijs/joi/master/images/joi.png" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg" width="60"> | <img src="https://jwt.io/img/pic_logo.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/swagger/swagger-original.svg" width="60"> |
+| <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/prisma/prisma-original.svg" width="60"> | <img src="https://img.shields.io/badge/Joi-Validation-purple?style=for-the-badge" height="30"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg" width="60"> | <img src="https://jwt.io/img/pic_logo.svg" width="60"> | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/swagger/swagger-original.svg" width="60"> |
 | **Prisma ORM** | **Joi Validation** | **Redux Toolkit** | **JWT / Bcrypt** | **Swagger UI** |
 
 ---
@@ -106,7 +106,6 @@ graph TD
 
     subgraph "Communication Layer"
         SIO["⚡ Socket.io (Real-time Events)"]
-        PJS["📹 PeerJS (P2P Video/Data)"]
     end
 
     subgraph "Backend API (Express / Node.js)"
@@ -130,7 +129,6 @@ graph TD
 
     UI <-->|REST / JWT| API_GW
     UI <-->|WS Events| SIO
-    UI <-->|WebRTC| PJS
     
     Auth & Swap & Chat & Assess --> Prisma
     SIO <--> Swap & Chat
@@ -203,10 +201,7 @@ kutty_project/
 **1. Real-time Synchronization**
 > Managed complex state transitions during skill swaps (Pending -> Accepted -> In-Progress -> Completed) using Socket.io to ensure both users see consistent data without refreshing.
 
-**2. P2P Connectivity & NAT Traversal**
-> Implemented PeerJS to facilitate direct user-to-user video and data streams, handling signaling through the main Express server to overcome connectivity barriers.
-
-**3. Type-Safe Data Layer**
+**2. Type-Safe Data Layer**
 > Leveraged Prisma's powerful introspection and client generating to ensure runtime safety across complex relations between Users, Skills, Swaps, and Feedback.
 
 ---
@@ -219,7 +214,7 @@ kutty_project/
 | Database Indexing (Prisma) | Sub-100ms response times for skill discovery |
 | Socket.io Binary Frames | Efficient real-time messaging with low overhead |
 | Middleware Rate Limiting | Protected critical auth endpoints from brute-force |
-| PeerJS P2P Streaming | Reduced server bandwidth consumption by offloading video data |
+
 
 ---
 
